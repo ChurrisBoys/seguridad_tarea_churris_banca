@@ -1,0 +1,100 @@
+.CreatePost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  margin-top: 5%;
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.buttons-left, .buttons-right {
+  display: flex;
+}
+
+.button {
+  padding: 6px 15px;
+  font-size: 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.button:last-child {
+  margin-right: 0;
+}
+
+.title {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.App-Submit-Button {
+  padding: 6px 15px;
+  font-size: 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.gray-rectangle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 180px;
+  background-color: #ccc;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.upload-and-comment {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.upload-icon-container {
+  margin-right: 20px; 
+  cursor: pointer;
+}
+
+.upload-icon {
+  height: auto;
+  width: 150px;
+  transition: transform 0.3s;
+}
+
+.upload-icon:hover {
+  transform: scale(1.1); 
+}
+
+
+.post-text {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #a8a6a6;
+  background-color:  #ccc;
+  resize: none; 
+}
