@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import BankingFeed from './components/Banking/BankingFeed';
+import SocialFeed from './components/Social/SocialFeed';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -15,6 +16,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/banking" element={<BankingFeed />} />
+        <Route path="/social" element={<SocialFeed />} />
       </Routes>
     </Router>
   </React.StrictMode>

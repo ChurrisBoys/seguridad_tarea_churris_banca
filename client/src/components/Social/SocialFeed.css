@@ -1,0 +1,127 @@
+
+.SocialFeed_SocialFeed {
+	left: 0px;
+	top: 0px;
+	margin: auto;
+	width: 100%;
+	height: 100vh;
+	overflow: auto;
+	background: rgba(255,255,255,1.00);
+}
+.SocialFeed_SocialFeed .SocialFeed_1 {
+  position: absolute;
+	left: 85.67999999999999px;
+	top: 135.66px;
+	width: 259.42px;
+	height: 57.12px;
+	color: rgba(0,0,0,1.00);
+	font-family: Inter;
+	font-size: 47.599999999999994px;
+	font-weight: 400;
+	line-height: 57.60681488037109px;
+}
+.SocialFeed_SocialFeed .Title {
+  display: flex;
+	margin-left: 110px;
+	margin-top: 110px;
+	width: 100%;
+	height: 61.879999999999995px;
+	font-family: Inter;
+	font-size: 60.599999999999994px;
+	font-weight: 400;
+}
+.SocialFeed_SocialFeed .NextButton {
+  display: flex;
+	justify-content: center;
+}
+.SocialFeed_SocialFeed .NextText {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 60px;
+	padding-right: 60px;
+	background-color: black;
+	color: rgb(255,255,255,1.00);
+	font-family: Inter;
+	font-size: 35.699999999999996px;
+	font-weight: 400;
+	line-height: 43.20511116027832px;
+}
+.SocialFeed_SocialFeed .SearchUsersButton {
+	display: flex;
+	justify-content: flex-end;
+	margin-right: 300px;
+}
+.SocialFeed_SocialFeed .SearchUsersButtonBody {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 384.64px;
+	height: 61.879999999999995px;
+	background: rgba(24,24,24,1.00);
+}
+.SocialFeed_SocialFeed .SearchUsersButton .SearchusersText {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 110px;
+	padding-right: 110px;
+	background-color: black;
+	color: rgba(255,255,255,1.00);
+	font-family: Inter;
+	font-size: 35.699999999999996px;
+	font-weight: 400;
+	line-height: 43.20511116027832px;
+}
+.SocialFeed_SocialFeed .Post {
+  display: flex;
+	justify-content: center;
+}
+.SocialFeed_SocialFeed .Post .PostBody {
+  display: flex;
+	left: 0px;
+	top: 0px;
+	padding: 50px;
+	margin: 30px;
+	width: 1816.1399999999999px;
+	height: 249.89999999999998px;
+	background: rgba(217,217,217,1.00);
+}
+.SocialFeed_SocialFeed .Post .UserAndText {
+	margin-left: 30px;
+  display: block;
+}
+.SocialFeed_SocialFeed .Post .likeDislikeButtons {
+	display: flex;
+	width: 192.78px;
+	height: 99.96px;
+	object-fit: cover;
+	overflow: hidden;
+}
+.SocialFeed_SocialFeed .Post .imageContainer {
+	display: flex; /*enables flex spacing, which is auto spacing*/
+	justify-content: end; /*moves the contents to horizontally*/
+	align-items: end; /*moves the contents vertically*/
+	flex-grow: 1; /*all the remaining space when inside another flex space will be taken by this div*/
+}
+.SocialFeed_SocialFeed .Post .Text {
+  display: flex;
+	margin-top: 30px;
+	width: 461.71999999999997px;
+	height: 42.839999999999996px;
+	color: rgba(0,0,0,1.00);
+	font-family: Inter;
+	font-size: 35.699999999999996px;
+	font-weight: 400;
+	line-height: 43.20511116027832px;
+}
+.SocialFeed_SocialFeed .Post .usuario {
+  display: flex;
+	left: 345.09999999999997px;
+	top: 21.419999999999998px;
+	width: 461.71999999999997px;
+	height: 42.839999999999996px;
+	color: rgba(0,0,0,1.00);
+	font-family: Inter;
+	font-size: 35.699999999999996px;
+	font-weight: 400;
+	line-height: 43.20511116027832px;
+}
