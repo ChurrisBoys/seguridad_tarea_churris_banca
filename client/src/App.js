@@ -25,11 +25,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+      <header className = "App-logo-header"> 
       <img src={logo} className="App-logo" alt="logo" />
+      </header>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label id="username">Username:</label>
             <input
+              class = "App-textbox"
               type="text"
               id="username"
               value={username}
@@ -39,13 +42,14 @@ function App() {
           <div className="form-group">
             <label id="password">Password:</label>
             <input
+              class = "App-textbox"
               type="password"
               id="password"
               value={password}
               onChange={handlePasswordChange}
             />
           </div>
-          <button type="submit">Submit</button>
+          <button className='App-Submit-Button' type="submit">Submit</button>
         </form>
       </header>
     </div>
