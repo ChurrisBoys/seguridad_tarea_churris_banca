@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 30px;
+  margin-top: 5%;
 }
 
 .top-buttons {
@@ -57,8 +57,44 @@
 }
 
 .gray-rectangle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 400px;
+  height: 180px;
   background-color: #ccc;
   margin-bottom: 20px;
+  padding: 20px;
+}
+
+.upload-and-comment {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.upload-icon-container {
+  margin-right: 20px; 
+  cursor: pointer;
+}
+
+.upload-icon {
+  height: auto;
+  width: 150px;
+  transition: transform 0.3s;
+}
+
+.upload-icon:hover {
+  transform: scale(1.1); 
+}
+
+
+.post-text {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #a8a6a6;
+  background-color:  #ccc;
+  resize: none; 
 }

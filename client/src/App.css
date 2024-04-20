@@ -48,9 +48,9 @@
 .App-logo {
   height: 40vmin;
   pointer-events: none;
-  transition: transform 0.3s; /* Add transition for smooth scaling */
+  transition: transform 0.3s;
 }
 
 .App-logo-header:hover .App-logo{
-  transform: scale(1.1); /* Enlarge the image by 10% */
+  transform: scale(1.1); 
 }
