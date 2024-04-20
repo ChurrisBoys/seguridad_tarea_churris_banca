@@ -10,12 +10,16 @@ function CreatePost() {
     navigate('/'); 
   };
 
+  const handleTransaction = () => {
+    navigate('/banking'); 
+  };
+
   return (
     <div className="CreatePost">
       <div className="top-buttons">
         <div className="buttons-left">
           <button className="button">Friends</button>
-          <button className="button">Transactions</button>
+          <button className="button" onClick={handleTransaction}>Transactions</button>
         </div>
         <div className="buttons-right">
           <button className="button">My Profile</button>
