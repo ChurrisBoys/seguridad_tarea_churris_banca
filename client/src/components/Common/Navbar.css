@@ -1,0 +1,22 @@
+
+.top-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.buttons-left,
+.buttons-right {
+    display: flex;
+}
+
+.button {
+    padding: 6px 15px;
+    font-size: 16px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
