@@ -16,9 +16,9 @@ function DisplayPosts() {
 			<div className='PostBody'>
 				<img className='PostImage' src = {ImgAsset.SocialFeed_PostImage} />
 				<div className='UserAndText'>
-				<span className='usuario'>{post.user}</span>
-				<span className='Text'>{post.text}</span>
-			</div>
+					<span className='user'>{post.user}</span>
+					<span className='Text'>{post.text}</span>
+				</div>
 			<div className='imageContainer'>
 				<img className='likeDislikeButtons' src = {ImgAsset.SocialFeed_likeDislikeButtons} />
 			</div>
@@ -38,16 +38,15 @@ export default function SocialFeed () {
 		    <div className='Title'>
 					<span className='TitleText'>Social Feed</span>
         </div>
-			<div className='SearchUsersButton'>
-			<span className='SearchusersText'>Search users</span>
+			<div className='SearchFriendButton'>
+				<span className='SearchfriendsText Button'>Search friends</span>
 			</div>
 			{DisplayPosts()};
-			<Link to='/undefined'>
-			<div className='NextButton'>
-				<span className='NextText'>Next</span>
-			</div>
+			<Link to='/search'>
+				<div className='NextButton'>
+					<span className='NextText Button'>Next</span>
+				</div>
 			</Link>
-			
 		</div>
 	)
 }

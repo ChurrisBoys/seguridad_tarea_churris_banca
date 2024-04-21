@@ -1,0 +1,33 @@
+.Friend {
+  display: flex;
+	justify-content: center;
+}
+.Friend .FriendBody {
+  display: flex;
+	left: 0px;
+	top: 0px;
+	padding: 50px;
+	margin: 30px;
+  width: 70%;
+	height: 249.89999999999998px;
+	background: rgba(217,217,217,1.00);
+}
+.Friend .user {
+	margin-left: 30px	;
+}
+.FollowButton {
+	display: flex; /*enables flex spacing, which is auto spacing*/
+	justify-content: end; /*moves the contents to horizontally*/
+	align-items: end; /*moves the contents vertically*/
+	flex-grow: 1; /*all the remaining space when inside another flex space will be taken by this div*/
+}
+.SearchFriendArea {
+	display: flex;
+	justify-content: space-between;
+	margin-left: 300px;
+	margin-right: 300px;
+}
+.InputFriendName {
+	width: 70%;
+	height: 60px;
+}

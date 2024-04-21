@@ -6,6 +6,7 @@ import App from './App';
 import BankingFeed from './components/Banking/BankingFeed';
 import SocialFeed from './components/Social/SocialFeed';
 import CreatePost from './components/Profile/CreatePost';
+import SearchFriends from './components/Social/SearchFriends/SearchFriends';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -18,6 +19,7 @@ root.render(
         <Route path="/" element={<App />} />
         <Route path="/banking" element={<BankingFeed />} />
         <Route path="/social" element={<SocialFeed />} />
+        <Route path="/search" element={<SearchFriends />} />
       </Routes>
       <Routes>
         <Route path="/" element={<App />} />
