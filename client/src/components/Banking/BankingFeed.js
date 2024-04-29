@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "../Common/Layout";
 
-const pageSize = 2;
+const pageSize = 8;
 
 
 const transactions = [
@@ -32,22 +32,22 @@ const transactions = [
 ];
 
 
-function SliceTransactions(page, pageSize) {
-    const startIndex = (page - 1) * pageSize;
+function SliceTransactions(currentPage, pageSize) {
+    const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return transactions.slice(startIndex, endIndex);
 
 }
 
-function CreateTransactionButton() {
+const CreateTransactionButton = () => {
     return (
-        <button className="btn btn-primary">Realizar Transaccion</button>
+        <button className="btn btn-dark btn-primary" >Create transaction</button>
     );
 }
 
-function NextPageButton({ page, setPage }) {
+function NextPageButton({ currentPage, setPage }) {
     return (
-        <button className="btn btn-primary" onClick={() => { setPage((page % pageSize) + 1) }}>Siguiente</button>
+        <button className="btn btn-dark btn-primary" onClick={() => { setPage((currentPage % pageSize) + 1) }}>Next</button>
     );
 }
 
@@ -67,10 +67,10 @@ function TransactionTable({ transactions }) {
         <table className="table">
             <thead>
                 <tr>
-                    <th>Monto</th>
-                    <th>Tipo</th>
-                    <th>Cuenta de origen</th>
-                    <th>Cuenta de destino</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Transferring account</th>
+                    <th>Target account</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,22 +82,29 @@ function TransactionTable({ transactions }) {
     );
 }
 
-function BankingFeed({ transactions, page, setPage }) {
+function BankingFeed({ transactions, currentPage, setPage }) {
     return (
         <div>
             <Layout>
-                {CreateTransactionButton()}
-                <TransactionTable transactions={transactions} />
-                {NextPageButton({ page, setPage })}
+                <div class="row">
+                    <div class="col-10">
+                        <TransactionTable transactions={transactions} />
+                        {NextPageButton({ currentPage, setPage })}
+
+                    </div>
+                    <div class="col">
+                        {CreateTransactionButton()}
+                    </div>
+                </div>
             </Layout>
         </div>
     );
 }
 
 export default function Banking() {
-    const [page, setPage] = React.useState(1);
-    const transactions = SliceTransactions(page, pageSize);
+    const [currentPage, setPage] = React.useState(1);
+    const transactions = SliceTransactions(currentPage, pageSize);
 
 
-    return <BankingFeed transactions={transactions} page={page} setPage={setPage} />;
+    return <BankingFeed transactions={transactions} currentPage={currentPage} setPage={setPage} />;
 }
