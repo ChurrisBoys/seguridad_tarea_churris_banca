@@ -17,6 +17,10 @@ function Navbar() {
         navigate('/banking');
     };
 
+    const hadleMyProfile = () => {
+        navigate('/myprofile');
+    };
+
     return (
         <div className="Navbar">
             <div className="top-buttons">
@@ -25,7 +29,7 @@ function Navbar() {
                     <button className="button" onClick={handleTransaction}>Transactions</button>
                 </div>
                 <div className="buttons-right">
-                    <button className="button">My Profile</button>
+                    <button className="button" onClick={hadleMyProfile}>My Profile</button>
                     <button className="button" onClick={handleExit}>Exit</button>
                 </div>
             </div>
