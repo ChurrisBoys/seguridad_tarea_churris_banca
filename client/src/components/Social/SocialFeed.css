@@ -1,52 +1,26 @@
 
-.SocialFeed_SocialFeed {
-	left: 0px;
-	top: 0px;
-	width: 100%;
-	height: 100vh;
-	overflow: auto;
-	background: rgba(255,255,255,1.00);
-}
 .Button {
+	flex-shrink: 0; /*take only needed space horizontally in flex box*/
+	height: fit-content; /*take only needed space vertically*/
+  padding: 6px 15px;
   border-radius: 5px;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 60px;
-	padding-right: 60px;
 	background-color: black;
 }
 .Text {
 	color: rgb(255,255,255,1.00);
-	font-size: 35.699999999999996px;
-	font-weight: 400;
-
-}
-.Title {
-  display: flex;
-	margin-left: 110px;
-	margin-top: 110px;
-	width: 100%;
-	height: 61.879999999999995px;
-	font-size: 60.599999999999994px;
-	font-weight: 400;
 }
 .NextButton {
   display: flex;
 	justify-content: center;
 }
-.SocialFeed_SocialFeed .NextText {
+.SocialFeedPage .NextText {
 	color: rgb(255,255,255,1.00);
-	font-size: 35.699999999999996px;
-	font-weight: 400;
 }
-.SocialFeed_SocialFeed .SearchFriendButton {
+.SocialFeedPage .SearchFriendButton {
 	display: flex;
-	justify-content: flex-end;
-	margin-right: 250px;
-	margin-top: 30px;
-	margin-bottom: 30px;
+	justify-content: space-between;
 }
-.SocialFeed_SocialFeed .SearchFriendButtonBody {
+.SocialFeedPage .SearchFriendButtonBody {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -54,44 +28,46 @@
 	height: 61.879999999999995px;
 	background: rgba(24,24,24,1.00);
 }
-.SocialFeed_SocialFeed .SearchFriendButton .SearchfriendsText {
+.SocialFeedPage .SearchFriendButton .SearchfriendsText {
 	color: rgba(255,255,255,1.00);
-	font-size: 35.699999999999996px;
-	font-weight: 400;
-	line-height: 43.20511116027832px;
 }
-.SocialFeed_SocialFeed .Post {
+.Post {
   display: flex;
 	justify-content: center;
 }
-.SocialFeed_SocialFeed .Post .PostBody {
+.Post .PostBody {
   display: flex;
 	left: 0px;
 	top: 0px;
-	padding: 50px;
+	padding: 30px;
 	margin: 30px;
-  width: 70%;
-	height: 249.89999999999998px;
 	background: rgba(217,217,217,1.00);
 }
-.SocialFeed_SocialFeed .Post .UserAndText {
+.Post .UserAndText {
 	margin-left: 30px;
   display: block;
 }
-.SocialFeed_SocialFeed .Post .likeDislikeButtons {
+.Post .PostImage {
+	width: 180px;
+}
+.Post .likeDislikeButtons {
 	display: flex;
 	width: 192.78px;
 	height: 99.96px;
 	object-fit: cover;
 	overflow: hidden;
 }
-.SocialFeed_SocialFeed .Post .imageContainer {
+.Post .imageContainer {
 	display: flex; /*enables flex spacing, which is auto spacing*/
-	justify-content: end; /*moves the contents to horizontally*/
+	justify-content: end; /*moves the contents horizontally*/
 	align-items: end; /*moves the contents vertically*/
 	flex-grow: 1; /*all the remaining space when inside another flex space will be taken by this div*/
 }
-.SocialFeed_SocialFeed .Post .Text {
+.likeAndDislikeSize {
+	width: 60px;
+	margin-right: 7px;
+}
+.Post .Text {
   display: flex;
 	margin-top: 30px;
 	width: 461.71999999999997px;

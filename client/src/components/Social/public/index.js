@@ -13,4 +13,6 @@
 	questionMark: require('./questionMark.png'),
 	SocialFeed_PostImage: tryRequire('./SocialFeed_PostImage.png') || require('./questionMark.png'),
 	SocialFeed_likeDislikeButtons: tryRequire('./SocialFeed_likeDislikeButtons.png') || require('./questionMark.png'),
+	likeImage: tryRequire('./likeImage.png') || require('./questionMark.png'),
+	dislikeImage: tryRequire('./dislikeImage.png') || require('./questionMark.png'),
 }

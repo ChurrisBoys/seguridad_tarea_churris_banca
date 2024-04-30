@@ -8,7 +8,7 @@
 	top: 0px;
 	padding: 50px;
 	margin: 30px;
-  width: 70%;
+  width: 90%;
 	height: 249.89999999999998px;
 	background: rgba(217,217,217,1.00);
 }
@@ -24,8 +24,6 @@
 .SearchFriendArea {
 	display: flex;
 	justify-content: space-between;
-	margin-left: 300px;
-	margin-right: 300px;
 }
 .InputFriendName {
 	width: 70%;

@@ -4,33 +4,9 @@ import ImgAsset from '../Social/public'
 import userIcon from './UserIcon.svg'
 import Layout from "../Common/Layout";
 import './MyProfile.css';
+import DisplayPosts from '../Social/DisplayPosts';
 
-const posts = [
-    { user: 'jony', text: "MyText1 and my stuff" },
-    { user: 'Garlic', text: "MyText2" },
-  ];
 
-function DisplayPosts() {
-	// Creating the Posts with the raw post data
-	const listPosts = posts.map(post =>
-		<div className='Post'>
-			<div className='PostBody'>
-				<img className='PostImage' src = {ImgAsset.SocialFeed_PostImage} />
-				<div className='UserAndText'>
-					<span className='user'>{post.user}</span>
-					<span className='Text'>{post.text}</span>
-				</div>
-			<div className='imageContainer'>
-				<img className='likeDislikeButtons' src = {ImgAsset.SocialFeed_likeDislikeButtons} />
-			</div>
-		</div>
-	</div>
-	);
-
-	return (
-		<div className='Posts'>{listPosts}</div>
-	);
-}
 
 function MyProfile() {
 
@@ -56,7 +32,7 @@ function MyProfile() {
 
                 <h2>My Posts</h2>
                 <div className='posts_by_me'>
-                    {DisplayPosts()}
+        			<DisplayPosts/>
                 </div>
             </div>
         </Layout>

@@ -4,6 +4,7 @@ import '../SocialFeed.css'
 import './SearchFriends.css'
 import ImgAsset from '../public'
 import {Link} from 'react-router-dom'
+import Layout from "../../Common/Layout";
 
 const friends = [
   { friend: 'jony' },
@@ -33,20 +34,20 @@ function DisplayFriends() {
 
 export default function SearchFriends () {
 	return (
+		<Layout>
 		<div className='SearchFriends'>
-		    <h2 className='Title'>
-					Search Friends
-        </h2>
+		    <h2 className='Title'>Search Friends</h2>
 			<div className='SearchFriendArea'>
 				<textarea className="InputFriendName" placeholder="Your friend's name..."></textarea>
 				<span className='Button Text'>Search friend</span>
 			</div>
-			{DisplayFriends()};
+			{DisplayFriends()}
 			<Link to='/undefined'>
 				<div className='NextButton'>
 					<span className='Text Button'>Next</span>
 				</div>
 			</Link>
 		</div>
+		</Layout>
 	)
 }
