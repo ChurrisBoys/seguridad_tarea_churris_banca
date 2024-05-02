@@ -1,5 +1,6 @@
 import logo from './logo.png';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import './App.css';
 
 function App() {
@@ -22,12 +23,29 @@ function App() {
     // You can send a request to your Node.js backend to authenticate the user
   };
 
+
+
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:3001/api/data');
+      const jsonData = await response.json();
+      setData(jsonData);
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
+    <div className="App"> 
       <header className="App-header">
       <header className = "App-logo-header"> 
       <img src={logo} className="App-logo" alt="logo" />
       </header>
+      {/* <div>   */}
+        {/* {data ? <p>{data.message}</p> : <p>Loading...</p>} */}
+      {/* </div>  */}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label id="username">Username:</label>
@@ -51,6 +69,7 @@ function App() {
           </div>
           <button className='App-Submit-Button' type="submit">Submit</button>
         </form>
+        
       </header>
     </div>
   );
