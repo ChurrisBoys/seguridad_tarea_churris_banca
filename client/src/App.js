@@ -1,11 +1,25 @@
 import logo from './logo.png';
 import React, { useState, useEffect } from 'react';
-
 import './App.css';
 
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/users');
+        const user = await response.json();
+        setUsername(user.username);  // Assuming the user object has a username field
+        setPassword(user.password);  // Assuming the user object has a password field
+      } catch (error) {
+        console.error('Failed to fetch user', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -17,40 +31,22 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Here you can implement your logic for handling the login credentials
     console.log('Username:', username);
     console.log('Password:', password);
-    // You can send a request to your Node.js backend to authenticate the user
   };
 
-
-
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:3001/api/data');
-      const jsonData = await response.json();
-      setData(jsonData);
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <div className="App"> 
+    <div className="App">
       <header className="App-header">
-      <header className = "App-logo-header"> 
-      <img src={logo} className="App-logo" alt="logo" />
-      </header>
-      {/* <div>   */}
+         {/* <div>   */}
         {/* {data ? <p>{data.message}</p> : <p>Loading...</p>} */}
-      {/* </div>  */}
+        {/* </div>  */}
+        <img src={logo} className="App-logo" alt="logo" />
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label id="username">Username:</label>
+            <label htmlFor="username">Username:</label>
             <input
-              class = "App-textbox"
+              className="App-textbox"
               type="text"
               id="username"
               value={username}
@@ -58,9 +54,9 @@ function App() {
             />
           </div>
           <div className="form-group">
-            <label id="password">Password:</label>
+            <label htmlFor="password">Password:</label>
             <input
-              class = "App-textbox"
+              className="App-textbox"
               type="password"
               id="password"
               value={password}
@@ -69,7 +65,6 @@ function App() {
           </div>
           <button className='App-Submit-Button' type="submit">Submit</button>
         </form>
-        
       </header>
     </div>
   );
