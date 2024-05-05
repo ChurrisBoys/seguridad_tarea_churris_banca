@@ -55,6 +55,9 @@
   width: 100%;
   margin: 20px 0;
 }
+.form-content {
+  width: 100%;
+}
 
 .gray-rectangle {
   display: flex;
