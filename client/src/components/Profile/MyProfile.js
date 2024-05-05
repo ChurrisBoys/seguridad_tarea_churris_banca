@@ -32,7 +32,7 @@ function MyProfile() {
 
                 <h2>My Posts</h2>
                 <div className='posts_by_me'>
-        			<DisplayPosts/>
+        			<DisplayPosts itemsOnPage={3}/>
                 </div>
             </div>
         </Layout>

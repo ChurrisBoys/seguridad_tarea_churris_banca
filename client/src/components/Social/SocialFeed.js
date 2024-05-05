@@ -1,4 +1,5 @@
 import React from 'react'
+import {useState} from 'react';
 import './SocialFeed.css'
 import {Link} from 'react-router-dom'
 import Layout from "../Common/Layout";
@@ -14,10 +15,7 @@ export default function SocialFeed () {
 					<span className='SearchfriendsText Button'>Search friends</span>
 				</Link>
 			</div>
-			<DisplayPosts/>
-				<div className='NextButton'>
-					<span className='NextText Button'>Next</span>
-				</div>
+			<DisplayPosts itemsOnPage={3}/>
 		</div>
 		</Layout>
 	)

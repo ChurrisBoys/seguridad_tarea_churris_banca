@@ -29,6 +29,10 @@ function startServer(db) {
     fetchUsers(db, res);
   })
 
+  app.get('/api/posts', (req, res) => {
+    fetchPosts(db, res);
+  })
+
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
   });
@@ -53,6 +57,20 @@ function fetchUsers(db, res) {
   db.query('SELECT * FROM Users', (err, results) => {
     if (err) {
       res.status(500).send('Error fetching users');
+      return;
+    }
+    res.json(results);
+  });
+}
+
+function fetchPosts(db, res) {
+  db.query('SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes \
+  FROM Posts p \
+  LEFT JOIN Likes l ON \
+  l.post_id = p.id \
+  GROUP BY p.id', (err, results) => {
+    if (err) {
+      res.status(500).send('Error fetching posts');
       return;
     }
     res.json(results);

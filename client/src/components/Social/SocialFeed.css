@@ -69,13 +69,10 @@
 }
 .Post .Text {
   display: flex;
-	margin-top: 30px;
-	width: 461.71999999999997px;
-	height: 42.839999999999996px;
+	width: 30px;
 	color: rgba(0,0,0,1.00);
-	font-size: 30.699999999999996px;
+	font-size: 28px;
 	font-weight: 400;
-	line-height: 43.20511116027832px;
 }
 .user {
   display: flex;
