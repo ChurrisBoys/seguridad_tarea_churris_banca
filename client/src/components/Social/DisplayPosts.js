@@ -8,7 +8,9 @@ export default function DisplayPosts(props) {
 	const [actualPage, setPage] = useState(1);
 
 	const GoToNextPage = () => {
-		setPage(actualPage+1);
+		const searchParams = new URLSearchParams(window.location.search);
+		const nextPage = parseInt(searchParams.get('page'))+1;
+		setPage(nextPage <= numberOfPages ? (nextPage) : (numberOfPages));
     };
 
 	// Getting the posts from the database
@@ -27,16 +29,18 @@ export default function DisplayPosts(props) {
 	  }, []);
 
 		
+	// Applying pagination
 	const itemsOnPage = props.itemsOnPage;
 	const numberOfPages = Math.ceil(posts.length / itemsOnPage);
 	const searchParams = new URLSearchParams(window.location.search);
 	const start = searchParams.get('page') || 1;
-	// Creating the Posts with the raw post data
 	const listPosts = posts
 	.filter((post, i) => 
     	(((start - 1) * itemsOnPage) < i + 1) && 
 	    (i+1 <= start * itemsOnPage)
 	)
+	
+	// Creating the Posts with the raw post data
 	.map(post =>
 		<div className='Post'>
 			<div className='PostBody'>
