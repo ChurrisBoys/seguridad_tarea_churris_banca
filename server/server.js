@@ -89,30 +89,30 @@ function fetchPosts(db, res) {
 
 
 function searchUsers(db, req, res) {
-    const searchTerm = req.query.term;
-    const currentUser = 'Emilia';  // For demonstration purposes, we're hardcoding this here.
+  const searchTerm = req.query.term;
+  const currentUser = req.query.currentUser;
 
-    if (!searchTerm) {
-        res.status(400).send('Search term is required');
-        return;
-    }
+  if (!searchTerm || !currentUser) {
+      res.status(400).send('Search term and current user are required');
+      return;
+  }
 
-    // Enhanced query to check if the current user follows the found users
-    const query = `
-        SELECT u.username, 
-               CASE WHEN f.user1 IS NOT NULL THEN true ELSE false END AS followed
-        FROM Users u
-        LEFT JOIN Follows f ON u.username = f.user2 AND f.user1 = ?
-        WHERE u.username LIKE CONCAT(?, '%')`;
+  // Enhanced query to check if the current user follows the found users
+  const query = `
+      SELECT u.username, 
+             CASE WHEN f.user1 IS NOT NULL THEN true ELSE false END AS followed
+      FROM Users u
+      LEFT JOIN Follows f ON u.username = f.user2 AND f.user1 = ?
+      WHERE u.username LIKE CONCAT(?, '%')`;
 
-    db.query(query, [currentUser, searchTerm], (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Database error');
-            return;
-        }
-        res.json(results);
-    });
+  db.query(query, [currentUser, searchTerm], (err, results) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Database error');
+          return;
+      }
+      res.json(results);
+  });
 }
 
 

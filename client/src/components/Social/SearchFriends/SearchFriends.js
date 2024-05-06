@@ -9,12 +9,12 @@ export default function SearchFriends() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        fetchFriends();
-    }, [searchTerm]); // Trigger fetchFriends when searchTerm changes
+        searchUsers();
+    }, [searchTerm]); // Trigger searchUsers when searchTerm changes
 
-    const fetchFriends = async () => {
+    const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}`);
+            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}&currentUser=Emilia`);  // TODO(us): change to actual user  
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -33,13 +33,13 @@ export default function SearchFriends() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ follower: 'Emilia' }) // Assuming Emilia is the follower
+                body: JSON.stringify({ follower: 'Emilia' }) // TODO(us): change to actual user 
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            // After successful follow, update the friends list
-            fetchFriends();
+            // Update search list
+            searchUsers();
         } catch (error) {
             console.error('Error following user:', error);
         }
@@ -57,7 +57,7 @@ export default function SearchFriends() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <button className='Button Text' onClick={fetchFriends}>Search friend</button>
+                    <button className='Button Text' onClick={searchUsers}>Search friend</button>
                 </div>
                 <div className='Friends'>
                     {friends.map(friend => (
