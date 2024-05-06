@@ -28,6 +28,16 @@ CREATE TABLE `Likes` (
   CONSTRAINT `Likes_CHECK` CHECK (`liked` = 1 or `liked` = 0)
 ) COMMENT='The binary field will represent ''1'' as the user liked this post, and ''0'' represents a dislike';
 
+CREATE TABLE `Follows` (
+  `user1` varchar(100) NOT NULL,
+  `user2` varchar(100) NOT NULL,
+  PRIMARY KEY (`user1`, `user2`),
+  CONSTRAINT `user1_FK` FOREIGN KEY (`user1`) REFERENCES `Users`(`username`),
+  CONSTRAINT `user2_FK` FOREIGN KEY (`user2`) REFERENCES `Users`(`username`),
+  CONSTRAINT `user1_user2_different` CHECK (`user1` <> `user2`)
+);
+
+
 
 INSERT INTO churrisbanca_social.Users (username,password) VALUES
 	 ('Alonso','Alonso123'),
@@ -44,7 +54,10 @@ INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALU
 	 ('Alonso',1,'Carlos',1),
 	 ('Alonso',2,'Carlos',0),
 	 ('Carlos',1,'Carlos',1);
-
+INSERT INTO churrisbanca_social.Follows(user1, user2) VALUES
+   ('Alonso', 'Emilia'),
+   ('Emilia', 'Alonso'),
+   ('Emilia', 'Brandon');
 
 
 
