@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../SocialFeed.css';
 import './SearchFriends.css';
 import { Link } from 'react-router-dom';
@@ -8,19 +8,43 @@ export default function SearchFriends() {
     const [friends, setFriends] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
+    useEffect(() => {
+        fetchFriends();
+    }, [searchTerm]); // Trigger fetchFriends when searchTerm changes
+
     const fetchFriends = async () => {
-			try {
-					const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}`);
-					if (!response.ok) {
-							throw new Error('Network response was not ok');
-					}
-					const data = await response.json();
-					setFriends(data);
-			} catch (error) {
-					console.error('Error fetching data:', error);
-					setFriends([]);
-			}
-	};
+        try {
+            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setFriends(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setFriends([]);
+        }
+    };
+
+    const followUser = async (username) => {
+        try {
+            const response = await fetch(`http://localhost:3001/api/follows/${username}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ follower: 'Emilia' }) // Assuming Emilia is the follower
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // After successful follow, update the friends list
+            fetchFriends();
+        } catch (error) {
+            console.error('Error following user:', error);
+        }
+    };
+
     return (
         <Layout>
             <div className='SearchFriends'>
@@ -41,7 +65,12 @@ export default function SearchFriends() {
                             <div className='FriendBody'>
                                 <span className='user'>{friend.username}</span>
                                 <div className='FollowButton'>
-                                    <button className='Button Text'>Follow</button>
+                                    <button 
+                                        className='Button Text' 
+                                        onClick={() => followUser(friend.username)}
+                                    >
+                                        {friend.followed ? 'Following' : 'Follow'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
