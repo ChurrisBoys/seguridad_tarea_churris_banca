@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
+// const {searchUsers} = requiere('./search');
 
 const app = express();
 const port = 3001;
@@ -33,6 +34,10 @@ function startServer(db) {
     fetchPosts(db, res);
   })
 
+  app.get('/api/friends', async (req, res) => {
+    searchUsers(db, req, res);
+  })
+
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
   });
@@ -52,6 +57,7 @@ function startListening() {
 }
 
 startServer(db);
+
 
 function fetchUsers(db, res) {
   db.query('SELECT * FROM Users', (err, results) => {
@@ -78,4 +84,21 @@ function fetchPosts(db, res) {
 }
 
 
+function searchUsers(db, req, res) {
+  const searchTerm = req.query.term;
+  if (!searchTerm) {
+      res.status(400).send('Search term is required');
+      return;
+  }
+
+  const query = "SELECT username FROM Users WHERE username LIKE CONCAT(?, '%')";
+  db.query(query, [searchTerm], (err, results) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Database error');
+          return;
+      }
+      res.json(results);
+  });
+}
 

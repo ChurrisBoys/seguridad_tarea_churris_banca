@@ -12,6 +12,7 @@
 .NextButton {
   display: flex;
 	justify-content: center;
+	margin-top:10px;
 }
 .SocialFeedPage .NextText {
 	color: rgb(255,255,255,1.00);

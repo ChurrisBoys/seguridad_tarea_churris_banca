@@ -43,7 +43,10 @@ INSERT INTO churrisbanca_social.Users (username,password) VALUES
 	 ('Alonso','Alonso123'),
 	 ('Carlos','Carlos123'),
 	 ('Emilia','Emilia123'),
-	 ('Brandon','Brandon123');
+	 ('Brandon','Brandon123'),
+   ('Carlitos','Carlitos123'),
+   ('Ernesto','Ernesto123'),
+   ('Camilo','Camilo123');
 INSERT INTO churrisbanca_social.Posts (username,description) VALUES
 	 ('Carlos','oal'),
 	 ('Carlos','post1'),
