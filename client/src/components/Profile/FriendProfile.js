@@ -1,14 +1,13 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom'; 
 import Layout from "../Common/Layout";
 import './MyProfile.css';
 import DisplayPosts from '../Social/DisplayPostsUser';
 
 function FriendProfile() {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
-    // Assuming "Emilia" is the username for which you want to fetch posts
-    const username = "Emilia";
+    const { username } = useParams();  // Extract the username
 
     return (
         <Layout>

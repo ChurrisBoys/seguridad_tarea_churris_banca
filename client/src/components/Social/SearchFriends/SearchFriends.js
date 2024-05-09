@@ -60,21 +60,21 @@ export default function SearchFriends() {
                     <button className='Button Text' onClick={searchUsers}>Search friend</button>
                 </div>
                 <div className='Friends'>
-                    {friends.map(friend => (
-                        <div key={friend.username} className='Friend'>
-                            <div className='FriendBody'>
-                                <span className='user'>{friend.username}</span>
-                                <div className='FollowButton'>
-                                    <button 
-                                        className='Button Text' 
-                                        onClick={() => followUser(friend.username)}
-                                    >
-                                        {friend.followed ? 'Following' : 'Follow'}
-                                    </button>
-                                </div>
-                            </div>
+                {friends.map(friend => (
+                    <div key={friend.username} className='Friend'>
+                    <div className='FriendBody'>
+                        <Link to={`/friends/${friend.username}`} className='user'>{friend.username}</Link>
+                        <div className='FollowButton'>
+                        <button 
+                            className='Button Text' 
+                            onClick={() => followUser(friend.username)}
+                        >
+                            {friend.followed ? 'Following' : 'Follow'}
+                        </button>
                         </div>
-                    ))}
+                    </div>
+                    </div>
+                ))}
                 </div>
                 <Link to='/undefined'>
                     <div className='NextButton'>
