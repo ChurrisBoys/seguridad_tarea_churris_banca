@@ -34,6 +34,10 @@ function startServer(db) {
     fetchPosts(db, res);
   })
 
+  app.get('/api/posts/:username', (req, res) => {
+    fetchPostsFromUser(db, req, res);
+  });
+
   app.post('/api/follows/:username', (req, res) => {
     followOrUnfollowUser(db, req, res);
   })
@@ -84,6 +88,27 @@ function fetchPosts(db, res) {
       return;
     }
     res.json(results);
+  });
+}
+
+
+function fetchPostsFromUser(db, req, res) {
+  const username = req.params.username;
+  const query = `
+      SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
+      FROM Posts p
+      LEFT JOIN Likes l ON l.post_id = p.id
+      WHERE p.username = ?
+      GROUP BY p.id
+  `;
+
+  db.query(query, [username], (err, results) => {
+      if (err) {
+          console.error('Error fetching posts from user:', err);
+          res.status(500).send('Error fetching posts');
+          return;
+      }
+      res.json(results);
   });
 }
 
