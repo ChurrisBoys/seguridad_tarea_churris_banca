@@ -125,17 +125,22 @@ function searchUsers(db, req, res) {
   }
 
   const query = `
-      SELECT u.username, 
-             CASE WHEN f.user1 IS NOT NULL THEN true ELSE false END AS followed,
-             EXISTS (
-               SELECT 1
-               FROM Follows AS f1
-               JOIN Follows AS f2 ON f1.user1 = f2.user2 AND f1.user2 = f2.user1
-               WHERE f1.user1 = ? AND f1.user2 = u.username
-             ) AS isMutual
+        SELECT 
+        u.username, 
+        CASE WHEN EXISTS (
+            SELECT 1
+            FROM Follows AS f
+            WHERE f.user1 = ? AND f.user2 = u.username
+        ) THEN true ELSE false END AS followed,
+        EXISTS (
+            SELECT 1
+            FROM Follows AS f1
+            JOIN Follows AS f2 ON f1.user1 = f2.user2 AND f1.user2 = f2.user1
+            WHERE f1.user1 = ? AND f1.user2 = u.username
+        ) AS isMutual
       FROM Users u
-      LEFT JOIN Follows f ON u.username = f.user2 AND f.user1 = ?
-      WHERE u.username LIKE CONCAT(?, '%')`;
+      WHERE u.username LIKE CONCAT(?, '%')
+      `;
 
   db.query(query, [currentUser, currentUser, searchTerm], (err, results) => {
       if (err) {
