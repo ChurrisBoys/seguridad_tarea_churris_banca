@@ -10,6 +10,7 @@ CREATE TABLE `Posts` (
   `description` varchar(100) DEFAULT NULL,
   `publish_date` date DEFAULT curdate(),
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  `image` blob DEFAULT NULL,
   PRIMARY KEY (`id`,`username`),
   KEY `Posts_username_FK` (`username`),
   CONSTRAINT `Posts_username_FK` FOREIGN KEY (`username`) REFERENCES `Users` (`username`),
