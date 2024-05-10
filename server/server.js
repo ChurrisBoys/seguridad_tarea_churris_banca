@@ -8,7 +8,7 @@ const port = 3001;
 
 // Setting up the database connection
 const db = mysql.createConnection({
-  host: 'localhost',
+  host: '192.168.0.20',
   user: 'churris',
   password: 'password',
   database: 'churrisbanca_social'
@@ -32,6 +32,10 @@ function startServer(db) {
 
   app.get('/api/posts', (req, res) => {
     fetchPosts(db, res);
+  })
+
+  app.post('/api/posts/liked', (req, res) => {
+    likeOrDislikePost(db, req, res);
   })
 
   app.post('/api/follows/:username', (req, res) => {
@@ -84,6 +88,71 @@ function fetchPosts(db, res) {
       return;
     }
     res.json(results);
+  });
+}
+
+function likeOrDislikePost(db, req, res) {
+  const post_liker = '\'' + req.query.post_liker + '\'';
+  const post_id = req.query.post_id;
+  const post_creator = '\'' + req.query.post_creator + '\'';
+  const liked = req.query.liked;
+  
+  // Query to know if there was already a like or dislike to this post from the post_liker
+  const likesQuery = `SELECT * FROM Likes l
+  WHERE l.username = ${post_liker}
+  AND l.post_id = ${post_id}
+  AND l.post_creator = ${post_creator}`;
+  db.query(likesQuery, (err, results) => {
+    if (err) {
+      res.status(500).send('Error fetching likes');
+      return;
+    }
+
+    // If the user already liked or disliked the post and clicked the same button, then remove its reaction
+    if(results.length > 0 && results[0].liked === parseInt(liked)) {
+      const deleteQuery = `DELETE FROM Likes
+      WHERE username = ${post_liker}
+      AND post_id = ${post_id}
+      AND post_creator = ${post_creator}`;
+      db.query(deleteQuery, (err, results) => {
+        if (err) {
+          res.status(500).send('Error removing reaction');
+          return;
+        }
+        res.json(results);
+      });
+    }
+
+    // If the post_liker already had a reaction to the post, then update the value
+    else if(results.length > 0) {
+      const updateQuery = `UPDATE Likes l
+      SET l.username = ${post_liker}
+      , l.post_id = ${post_id}
+      , l.post_creator = ${post_creator}
+      , l.liked = ${liked}
+      WHERE l.username = ${post_liker}
+      AND l.post_id = ${post_id}
+      AND l.post_creator = ${post_creator}`;
+      db.query(updateQuery, (err, results) => {
+        if (err) {
+          res.status(500).send('Error updating likes');
+          return;
+        }
+        res.json(results);
+      });
+    }
+    // If there wasn't any reaction in the database, then create it
+    else {
+      const insertQuery = `INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALUES
+      (${post_liker},${post_id},${post_creator},${liked});`;
+      db.query(insertQuery, (err, results) => {
+        if (err) {
+          res.status(500).send('Error inserting likes');
+          return;
+        }
+        res.json(results);
+      });
+    }
   });
 }
 

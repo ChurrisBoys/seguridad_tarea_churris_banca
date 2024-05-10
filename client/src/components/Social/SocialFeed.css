@@ -63,6 +63,7 @@
 	justify-content: end; /*moves the contents horizontally*/
 	align-items: end; /*moves the contents vertically*/
 	flex-grow: 1; /*all the remaining space when inside another flex space will be taken by this div*/
+	cursor: pointer;
 }
 .likeAndDislikeSize {
 	width: 60px;
