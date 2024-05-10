@@ -15,7 +15,7 @@ export default function SocialFeed () {
 					<span className='SearchfriendsText Button'>Search friends</span>
 				</Link>
 			</div>
-			<DisplayPosts itemsOnPage={3}/>
+			<DisplayPosts itemsOnPage={2}/>
 		</div>
 		</Layout>
 	)

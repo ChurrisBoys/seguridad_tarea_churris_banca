@@ -6,6 +6,14 @@ import ImgAsset from './public'
 export default function DisplayPosts(props) {
 	const [posts, setPosts] = useState([]);
 	const [actualPage, setPage] = useState(1);
+	const [likeTrigger, setLike] = useState(null);
+	const [imageData, setImageData] = useState(null);
+
+	const RenderImage = (imageByteData) => {
+		const byteArray = new Uint8Array(imageByteData);
+		const blob = new Blob([byteArray], { type: 'image/png' }); 
+		return URL.createObjectURL(blob);
+    };
 
 	const likeOrDislikePost = async (post_id, post_creator, liked) => {
 		const serverOperationString = 'http://localhost:3001/api/posts/liked?post_liker=' + 'Emilia' // TODO(us): change to actual user
@@ -19,11 +27,12 @@ export default function DisplayPosts(props) {
 		if (!response.ok) {
 			throw new Error('Error liking or disliking post');
 		}
+		setLike((likeTrigger + 1) % 6);
 	};
 
 	const GoToNextPage = () => {
 		const searchParams = new URLSearchParams(window.location.search);
-		const nextPage = parseInt(searchParams.get('page'))+1;
+		const nextPage = searchParams.get('page') !== null ? parseInt(searchParams.get('page'))+1 : 2;
 		setPage(nextPage <= numberOfPages ? (nextPage) : (numberOfPages));
     };
 
@@ -40,7 +49,7 @@ export default function DisplayPosts(props) {
 		  };
 		
 		fetchPosts();
-	  }, [posts]); // Updating the posts when the posts change
+	  }, [likeTrigger]); // Updating the posts when  liked or disliked
 
 		
 	// Applying pagination
@@ -61,17 +70,17 @@ export default function DisplayPosts(props) {
 			.map(post =>
 				<div className='Post'>
 					<div className='PostBody'>
-						<img className='PostImage' src = {ImgAsset.SocialFeed_PostImage} />
+						<img className='PostImage' src = {post.image !== null ? RenderImage(post.image.data) : ImgAsset.SocialFeed_PostImage} />
 						<div className='UserAndText'>
 							<span className='user'>{post.username}</span>
 							<span className='Text'>{post.description}</span>
 						</div>
 					<div className='imageContainer'>
-						<div onClick={() => likeOrDislikePost(post.id, post.username, 1)}>
+						<div className='imageContainer' onClick={() => likeOrDislikePost(post.id, post.username, 1)}>
 							<img className='likeAndDislikeSize likeButton' src = {ImgAsset.likeImage} />
 							<span className='Text'>{(post.likes === null) ? (0) : (post.likes)}</span>
 						</div>
-						<div onClick={() => likeOrDislikePost(post.id, post.username, 0)}>
+						<div className='imageContainer' onClick={() => likeOrDislikePost(post.id, post.username, 0)}>
 							<img className='likeAndDislikeSize dislikeButton' src = {ImgAsset.dislikeImage} />
 							<span className='Text'>{(post.dislikes === null) ? (0) : (post.dislikes)}</span>
 						</div>

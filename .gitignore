@@ -8,6 +8,7 @@ client/.vscode
 
 # testing
 /coverage
+server/userPostImages/*
 
 # production
 client/build

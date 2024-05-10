@@ -1,10 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
+
+// Packages for image processing
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const fs = require('fs');
 // const {searchUsers} = requiere('./search');
 
 const app = express();
 const port = 3001;
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
 
 // Setting up the database connection
 const db = mysql.createConnection({
@@ -28,6 +36,10 @@ function startServer(db) {
 
   app.get('/api/users', (req, res) => {
     fetchUsers(db, res);
+  })
+
+  app.post('/api/createpost', upload.single('user_image'), (req, res) => {
+    createPosts(db, req, res);
   })
 
   app.get('/api/posts', (req, res) => {
@@ -82,8 +94,40 @@ function fetchUsers(db, res) {
   });
 }
 
+function createPosts(db, req, res) {
+  const binaryImageData = null;
+  const file = req.file;
+
+  const createPost = (req, binaryImageData) => {
+    // Creating the Post
+    const createPostQuery = 'INSERT INTO churrisbanca_social.Posts (username,description,image) VALUES (?,?,?);';
+    db.query(createPostQuery, [req.body.logged_in_user, req.body.user_description, binaryImageData], (err, results) => {
+      if (err) {
+        res.status(500).send('Error creating Post, image may be too big');
+        return;
+      }
+      res.status(200).send('Post created succesfully');
+    });
+  }
+  // Use fs.readFile to read the image file
+  const processImage = (req) => {
+    fs.readFile(req.file.path, (err, readBinaryImageData) => {
+    if (err) {
+        console.error('Error reading file:', err);
+        return;
+      }
+      createPost(req, readBinaryImageData);
+    });
+  }
+
+  if(file !== undefined) 
+      processImage(req);
+  else
+    createPost(req, null);
+}
+
 function fetchPosts(db, res) {
-  db.query('SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes \
+  db.query('SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes \
   FROM Posts p \
   LEFT JOIN Likes l ON \
   l.post_id = p.id \
