@@ -23,7 +23,7 @@ root.render(
         <Route path="/banking" element={<BankingFeed />} />
         <Route path="/social" element={<SocialFeed />} />
         <Route path="/search" element={<SearchFriends />} />
-        <Route path="/friend" element={<FriendProfile />} />
+        <Route path="/friends/:username" element={<FriendProfile />} />
         <Route path="/myprofile" element={<MyProfile />} />
       </Routes>
       <Routes>

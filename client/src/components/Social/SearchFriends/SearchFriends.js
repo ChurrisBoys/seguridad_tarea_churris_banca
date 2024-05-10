@@ -9,12 +9,12 @@ export default function SearchFriends() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        searchUsers();
-    }, [searchTerm]); // Trigger searchUsers when searchTerm changes
+        searchUsers('Emilia');  // TODO(us): change to actual user 
+    }, [searchTerm]);
 
-    const searchUsers = async () => {
+    const searchUsers = async (currentUser) => {
         try {
-            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}&currentUser=Emilia`);  // TODO(us): change to actual user  
+            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -60,21 +60,25 @@ export default function SearchFriends() {
                     <button className='Button Text' onClick={searchUsers}>Search friend</button>
                 </div>
                 <div className='Friends'>
-                    {friends.map(friend => (
-                        <div key={friend.username} className='Friend'>
-                            <div className='FriendBody'>
+                {friends.map(friend => (
+                    <div key={friend.username} className='Friend'>
+                        <div className='FriendBody'>
+                            {friend.isMutual ? (
+                                <Link to={`/friends/${friend.username}`} className='user'>{friend.username}</Link>
+                            ) : (
                                 <span className='user'>{friend.username}</span>
-                                <div className='FollowButton'>
-                                    <button 
-                                        className='Button Text' 
-                                        onClick={() => followUser(friend.username)}
-                                    >
-                                        {friend.followed ? 'Following' : 'Follow'}
-                                    </button>
-                                </div>
+                            )}
+                            <div className='FollowButton'>
+                                <button 
+                                    className='Button Text' 
+                                    onClick={() => followUser(friend.username)}
+                                >
+                                    {friend.followed ? 'Following' : 'Follow'}
+                                </button>
                             </div>
                         </div>
-                    ))}
+                    </div>
+                ))}
                 </div>
                 <Link to='/undefined'>
                     <div className='NextButton'>

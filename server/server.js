@@ -8,7 +8,7 @@ const port = 3001;
 
 // Setting up the database connection
 const db = mysql.createConnection({
-  host: '192.168.0.20',
+  host: 'localhost',
   user: 'churris',
   password: 'password',
   database: 'churrisbanca_social'
@@ -38,6 +38,10 @@ function startServer(db) {
     likeOrDislikePost(db, req, res);
   })
 
+  app.get('/api/posts/:username', (req, res) => {
+    fetchPostsFromUser(db, req, res);
+  })
+
   app.post('/api/follows/:username', (req, res) => {
     followOrUnfollowUser(db, req, res);
   })
@@ -53,6 +57,7 @@ function startServer(db) {
   prepareDependencies();
   startListening();
 }
+
 
 function prepareDependencies() {
   // add more dependencies here
@@ -157,6 +162,26 @@ function likeOrDislikePost(db, req, res) {
 }
 
 
+function fetchPostsFromUser(db, req, res) {
+  const username = req.params.username;
+  const query = `
+      SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
+      FROM Posts p
+      LEFT JOIN Likes l ON l.post_id = p.id
+      WHERE p.username = ?
+      GROUP BY p.id
+  `;
+
+  db.query(query, [username], (err, results) => {
+      if (err) {
+          console.error('Error fetching posts from user:', err);
+          res.status(500).send('Error fetching posts');
+          return;
+      }
+      res.json(results);
+  });
+}
+
 function searchUsers(db, req, res) {
   const searchTerm = req.query.term;
   const currentUser = req.query.currentUser;
@@ -166,15 +191,25 @@ function searchUsers(db, req, res) {
       return;
   }
 
-  // Enhanced query to check if the current user follows the found users
   const query = `
-      SELECT u.username, 
-             CASE WHEN f.user1 IS NOT NULL THEN true ELSE false END AS followed
+        SELECT 
+        u.username, 
+        CASE WHEN EXISTS (
+            SELECT 1
+            FROM Follows AS f
+            WHERE f.user1 = ? AND f.user2 = u.username
+        ) THEN true ELSE false END AS followed,
+        EXISTS (
+            SELECT 1
+            FROM Follows AS f1
+            JOIN Follows AS f2 ON f1.user1 = f2.user2 AND f1.user2 = f2.user1
+            WHERE f1.user1 = ? AND f1.user2 = u.username
+        ) AS isMutual
       FROM Users u
-      LEFT JOIN Follows f ON u.username = f.user2 AND f.user1 = ?
-      WHERE u.username LIKE CONCAT(?, '%')`;
+      WHERE u.username LIKE CONCAT(?, '%')
+      `;
 
-  db.query(query, [currentUser, searchTerm], (err, results) => {
+  db.query(query, [currentUser, currentUser, searchTerm], (err, results) => {
       if (err) {
           console.error(err);
           res.status(500).send('Database error');
@@ -183,7 +218,6 @@ function searchUsers(db, req, res) {
       res.json(results);
   });
 }
-
 
 
 function followOrUnfollowUser(db, req, res) {
@@ -239,5 +273,4 @@ function followOrUnfollowUser(db, req, res) {
       });
   });
 }
-
 
