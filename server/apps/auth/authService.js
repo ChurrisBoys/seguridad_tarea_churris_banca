@@ -1,5 +1,5 @@
 import JWTSigningStrategy from '../../libraries/JWT/JWTSigningStrategy';
-
+import { compare } from '../../libraries/Hashing/hashUtils';
 
 class AuthService {
     constructor(userService) {
@@ -7,7 +7,7 @@ class AuthService {
     }
 
     async ComparePassword(user, inputedPassword) {
-        return user.password === inputedPassword;
+        return compare(inputedPassword, user.password);
     }
 
     async GetUser(username) {

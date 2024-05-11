@@ -6,6 +6,12 @@ function hashPassword(password) {
   return bcrypt.hash(password, salt);
 }
 
-function comparePassword(password, hash) {
-    return bcrypt.compare(password, hash);
-    }
+function compare(text, hash) {
+  return bcrypt.compare(text, hash);
+}
+
+module.exports = {
+
+  hashPassword,
+  compare,
+};
