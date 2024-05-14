@@ -1,5 +1,4 @@
-import UserRepository from './userRepository';
-
+const UserRepository = require('./userRepository.js');
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();

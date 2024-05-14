@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
@@ -6,7 +7,13 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const fs = require('fs');
-// const {searchUsers} = requiere('./search');
+
+// Routers for the different functionalities
+const createAuthRouter = require('./apps/auth/authEntry');
+
+//Services
+const UserService = require('./apps/user/userService');
+
 
 const app = express();
 const port = 3001;
@@ -15,12 +22,18 @@ app.use(bodyParser.json());
 const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
 
 // Setting up the database connection
+// Read from the secrets file
+const secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'churris',
-  password: 'password',
-  database: 'churrisbanca_social'
+  host: secrets.connection.host,
+  user: secrets.connection.user,
+  password: secrets.connection.password,
+  database: secrets.connection.database
 });
+
+// Setting up the JWT secret key
+const jwtSecretKey = secrets.security.jwtSecret;
+
 
 db.connect(err => {
   if (err) {
@@ -33,6 +46,8 @@ db.connect(err => {
 function startServer(db) {
   app.use(cors());
   app.use(express.json());
+
+  prepareDependencies();
 
   app.get('/api/users', (req, res) => {
     fetchUsers(db, res);
@@ -66,13 +81,14 @@ function startServer(db) {
     res.json({ message: 'Hello from the Node.js backend!' });
   });
 
-  prepareDependencies();
   startListening();
 }
 
 
 function prepareDependencies() {
   // add more dependencies here
+  app.use('/auth', createAuthRouter(UserService, jwtSecretKey));
+
 }
 
 function startListening() {
@@ -112,7 +128,7 @@ function createPosts(db, req, res) {
   // Use fs.readFile to read the image file
   const processImage = (req) => {
     fs.readFile(req.file.path, (err, readBinaryImageData) => {
-    if (err) {
+      if (err) {
         console.error('Error reading file:', err);
         return;
       }
@@ -120,8 +136,8 @@ function createPosts(db, req, res) {
     });
   }
 
-  if(file !== undefined) 
-      processImage(req);
+  if (file !== undefined)
+    processImage(req);
   else
     createPost(req, null);
 }
@@ -145,7 +161,7 @@ function likeOrDislikePost(db, req, res) {
   const post_id = req.query.post_id;
   const post_creator = '\'' + req.query.post_creator + '\'';
   const liked = req.query.liked;
-  
+
   // Query to know if there was already a like or dislike to this post from the post_liker
   const likesQuery = `SELECT * FROM Likes l
   WHERE l.username = ${post_liker}
@@ -158,7 +174,7 @@ function likeOrDislikePost(db, req, res) {
     }
 
     // If the user already liked or disliked the post and clicked the same button, then remove its reaction
-    if(results.length > 0 && results[0].liked === parseInt(liked)) {
+    if (results.length > 0 && results[0].liked === parseInt(liked)) {
       const deleteQuery = `DELETE FROM Likes
       WHERE username = ${post_liker}
       AND post_id = ${post_id}
@@ -173,7 +189,7 @@ function likeOrDislikePost(db, req, res) {
     }
 
     // If the post_liker already had a reaction to the post, then update the value
-    else if(results.length > 0) {
+    else if (results.length > 0) {
       const updateQuery = `UPDATE Likes l
       SET l.username = ${post_liker}
       , l.post_id = ${post_id}
@@ -217,12 +233,12 @@ function fetchPostsFromUser(db, req, res) {
   `;
 
   db.query(query, [username], (err, results) => {
-      if (err) {
-          console.error('Error fetching posts from user:', err);
-          res.status(500).send('Error fetching posts');
-          return;
-      }
-      res.json(results);
+    if (err) {
+      console.error('Error fetching posts from user:', err);
+      res.status(500).send('Error fetching posts');
+      return;
+    }
+    res.json(results);
   });
 }
 
@@ -231,8 +247,8 @@ function searchUsers(db, req, res) {
   const currentUser = req.query.currentUser;
 
   if (!searchTerm || !currentUser) {
-      res.status(400).send('Search term and current user are required');
-      return;
+    res.status(400).send('Search term and current user are required');
+    return;
   }
 
   const query = `
@@ -254,12 +270,12 @@ function searchUsers(db, req, res) {
       `;
 
   db.query(query, [currentUser, currentUser, searchTerm], (err, results) => {
-      if (err) {
-          console.error(err);
-          res.status(500).send('Database error');
-          return;
-      }
-      res.json(results);
+    if (err) {
+      console.error(err);
+      res.status(500).send('Database error');
+      return;
+    }
+    res.json(results);
   });
 }
 
@@ -271,50 +287,50 @@ function followOrUnfollowUser(db, req, res) {
   // Check if both users exist
   const checkUsersExistQuery = 'SELECT * FROM Users WHERE username IN (?, ?)';
   db.query(checkUsersExistQuery, [follower, followedUser], (err, users) => {
+    if (err) {
+      console.error('Error checking user existence:', err);
+      res.status(500).send('Database error.');
+      return;
+    }
+
+    if (users.length !== 2) {
+      res.status(400).send('One or both users do not exist.');
+      return;
+    }
+
+    // Check if the follow relationship already exists
+    const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
+    db.query(checkExistingFollowQuery, [follower, followedUser], (err, existingFollow) => {
       if (err) {
-          console.error('Error checking user existence:', err);
-          res.status(500).send('Database error.');
-          return;
+        console.error('Error checking existing follow:', err);
+        res.status(500).send('Database error.');
+        return;
       }
 
-      if (users.length !== 2) {
-          res.status(400).send('One or both users do not exist.');
-          return;
-      }
-
-      // Check if the follow relationship already exists
-      const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
-      db.query(checkExistingFollowQuery, [follower, followedUser], (err, existingFollow) => {
+      if (existingFollow.length > 0) {
+        // Relationship exists, so we want to unfollow
+        const deleteFollowQuery = 'DELETE FROM Follows WHERE user1 = ? AND user2 = ?';
+        db.query(deleteFollowQuery, [follower, followedUser], (err) => {
           if (err) {
-              console.error('Error checking existing follow:', err);
-              res.status(500).send('Database error.');
-              return;
+            console.error('Error unfollowing user:', err);
+            res.status(500).send('Database error.');
+            return;
           }
-
-          if (existingFollow.length > 0) {
-              // Relationship exists, so we want to unfollow
-              const deleteFollowQuery = 'DELETE FROM Follows WHERE user1 = ? AND user2 = ?';
-              db.query(deleteFollowQuery, [follower, followedUser], (err) => {
-                  if (err) {
-                      console.error('Error unfollowing user:', err);
-                      res.status(500).send('Database error.');
-                      return;
-                  }
-                  res.status(200).send('Successfully unfollowed user.');
-              });
-          } else {
-              // Relationship does not exist, so create it
-              const insertFollowQuery = 'INSERT INTO Follows (user1, user2) VALUES (?, ?)';
-              db.query(insertFollowQuery, [follower, followedUser], (err) => {
-                  if (err) {
-                      console.error('Error following user:', err);
-                      res.status(500).send('Database error.');
-                      return;
-                  }
-                  res.status(200).send('Successfully followed user.');
-              });
+          res.status(200).send('Successfully unfollowed user.');
+        });
+      } else {
+        // Relationship does not exist, so create it
+        const insertFollowQuery = 'INSERT INTO Follows (user1, user2) VALUES (?, ?)';
+        db.query(insertFollowQuery, [follower, followedUser], (err) => {
+          if (err) {
+            console.error('Error following user:', err);
+            res.status(500).send('Database error.');
+            return;
           }
-      });
+          res.status(200).send('Successfully followed user.');
+        });
+      }
+    });
   });
 }
 

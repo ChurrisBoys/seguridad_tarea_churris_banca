@@ -1,9 +1,8 @@
-import JWTSigningStrategy from '../../libraries/JWT/JWTSigningStrategy';
-import { compare } from '../../libraries/Hashing/hashUtils';
-
+const { compare } = require('bcrypt');
 class AuthService {
-    constructor(userService) {
+    constructor(userService, JWTSigningStrategy) {
         this.userService = userService;
+        this.JWTSigningStrategy = JWTSigningStrategy;
     }
 
     async ComparePassword(user, inputedPassword) {
@@ -18,11 +17,11 @@ class AuthService {
         const payload = {
             username: user.username,
         };
-        return JWTSigningStrategy.sign(payload);
+        return this.JWTSigningStrategy.sign(payload);
     }
 
     verifyToken(token) {
-        return JWTSigningStrategy.verify(token);
+        return this.JWTSigningStrategy.verify(token);
     }
 
     async LogIn(username, inputedPassword) {
@@ -35,3 +34,5 @@ class AuthService {
     }
 
 }
+
+module.exports = AuthService;

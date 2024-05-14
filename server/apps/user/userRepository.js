@@ -1,0 +1,1 @@
+// Implement the repository pattern for the user entity
