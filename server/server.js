@@ -87,7 +87,7 @@ function startServer(db) {
 
 function prepareDependencies() {
   // add more dependencies here
-  app.use('/auth', createAuthRouter(UserService, jwtSecretKey));
+  app.use('/auth', createAuthRouter(new UserService(db), jwtSecretKey));
 
 }
 

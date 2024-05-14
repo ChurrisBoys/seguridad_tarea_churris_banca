@@ -25,7 +25,7 @@ class AuthService {
     }
 
     async LogIn(username, inputedPassword) {
-        user = await this.GetUser(username);
+        var user = await this.GetUser(username);
         if (await this.ComparePassword(user, inputedPassword)) {
             return this.sign(user);
         } else {

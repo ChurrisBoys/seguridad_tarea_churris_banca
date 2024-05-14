@@ -31,9 +31,28 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('Username:', username);
-    console.log('Password:', password);
+    try {
+      fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+          // Do something with the data
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+    catch (error) {
+      console.error('Error:', error);
+    }
   };
+
 
   return (
     <div className="App">
@@ -63,7 +82,7 @@ function App() {
               onChange={handlePasswordChange}
             />
           </div>
-          <button className='App-Submit-Button' type="submit">Submit</button>
+          <button className='App-Submit-Button' type="submit" onSubmit={handleSubmit} >Submit</button>
         </form>
       </header>
     </div>
