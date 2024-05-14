@@ -41,13 +41,13 @@ CREATE TABLE `Follows` (
 
 
 INSERT INTO churrisbanca_social.Users (username,password) VALUES
-	 ('Alonso','Alonso123'),
-	 ('Carlos','Carlos123'),
-	 ('Emilia','Emilia123'),
-	 ('Brandon','Brandon123'),
-   ('Carlitos','Carlitos123'),
-   ('Ernesto','Ernesto123'),
-   ('Camilo','Camilo123');
+	 ('Alonso','$2a$10$IssUlhhFTLxbh.YiFQshGeeIhpVEZmvTlC7zB058lEiFQ8pv7QYb.'),
+	 ('Carlos','$2a$10$h1NR0PuyyZvxN1SIS97sT.nwnt1inPYk.T9J0TDhxH/ewRdVa6YYC'),
+	 ('Emilia','$2a$10$je7mgB/bF7nMwszes8iqnOYgy.NQcbqt6h/S9OPGtpBY6FUvF1PmG'),
+	 ('Brandon','$2a$10$je7mgB/bF7nMwszes8iqnOYgy.NQcbqt6h/S9OPGtpBY6FUvF1PmG'),
+   ('Carlitos','$2a$10$MSeHUpOM5X0eCHAHfV37WOtn1q7.HyGuRTTaJcANejIjggrF6hCnq'),
+   ('Ernesto','$2a$10$8EmE72qDQfvJNZqe7qDO1.U7ZBSwkhToaf3cDPPbSz/cA6rXqBmDm'),
+   ('Camilo','$2a$10$Ft3BqlzlWA7WVaHHDVfDu.2I9pQXn25cJjzuiJyQoo/gwOxbtPgU.');
 INSERT INTO churrisbanca_social.Posts (username,description) VALUES
 	 ('Carlos','oal'),
 	 ('Carlos','post1'),
