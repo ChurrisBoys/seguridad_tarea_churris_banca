@@ -49,6 +49,27 @@ function startServer(db) {
 
   prepareDependencies();
 
+  app.post('/api/transactions', async (req, res) => {
+    const transactionData = req.body; // This contains the data sent from the React app
+    console.log("HOLA! Estoy antes del try, dentro de /api/transaction");
+    try {
+        const response = await fetch('http://172.24.131.198/cgi-bin/helloworld.cgi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify(transactionData)  // Ensure this matches the data structure expected by the CGI script
+        });
+        const responseText = await response.text(); // Correctly handle the promise
+        console.log(responseText); // Log the response text for debugging
+        res.send(responseText); // Send the response back to the React application
+    } catch (error) {
+        console.error('Failed to connect to CGI server:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
   app.get('/api/users', (req, res) => {
     fetchUsers(db, res);
   })

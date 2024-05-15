@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/users');
+        const response = await fetch('http://172.24.131.195:3001/api/users');
         const user = await response.json();
         setUsername(user.username);  // Assuming the user object has a username field
         setPassword(user.password);  // Assuming the user object has a password field
@@ -32,7 +32,7 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     try {
-      fetch('http://localhost:3001/auth/login', {
+      fetch('http://172.24.131.195:3001/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

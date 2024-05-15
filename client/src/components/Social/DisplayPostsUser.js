@@ -18,7 +18,7 @@ export default function DisplayPostsUser({ user, itemsOnPage }) {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/api/posts/${user}`);
+                const response = await fetch(`http://172.24.131.195:3001/api/posts/${user}`);
                 const databasePosts = await response.json();
                 setUserPosts(databasePosts);
                 setNumberOfPages(Math.ceil(databasePosts.length / itemsOnPage));

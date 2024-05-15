@@ -14,7 +14,7 @@ export default function SearchFriends() {
 
     const searchUsers = async (currentUser) => {
         try {
-            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
+            const response = await fetch(`http://172.24.131.195:3001/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -28,7 +28,7 @@ export default function SearchFriends() {
 
     const followUser = async (username) => {
         try {
-            const response = await fetch(`http://localhost:3001/api/follows/${username}`, {
+            const response = await fetch(`http://172.24.131.195:3001/api/follows/${username}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

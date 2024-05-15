@@ -39,17 +39,41 @@ function SliceTransactions(currentPage, pageSize) {
 
 }
 
+
 const CreateTransactionButton = () => {
+    const createTransaction = async () => {
+        const newTransaction = {
+            // Define your transaction data here
+            amount: 500,
+            type: "deposit",
+            sourceAccount: "my_account",
+            destinationAccount: "my_account"
+        };
+
+        try {
+            const response = await fetch('http://172.24.131.198:3001/api/transactions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTransaction)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     return (
-        <button className="btn btn-dark btn-primary" >Create transaction</button>
+        <button className="btn btn-dark btn-primary" onClick={createTransaction}>Create transaction</button>
     );
 }
 
-function NextPageButton({ currentPage, setPage }) {
-    return (
-        <button className="btn btn-dark btn-primary" onClick={() => { setPage((currentPage % pageSize) + 1) }}>Next</button>
-    );
-}
+
 
 function TransactionRow({ transaction }) {
     return (
