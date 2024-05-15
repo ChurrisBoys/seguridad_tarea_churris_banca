@@ -39,6 +39,12 @@ function SliceTransactions(currentPage, pageSize) {
 
 }
 
+function NextPageButton({ currentPage, setPage }) {
+    return (
+        <button className="btn btn-dark btn-primary" onClick={() => { setPage((currentPage % pageSize) + 1) }}>Next</button>
+    );
+}
+
 
 const CreateTransactionButton = () => {
     const createTransaction = async () => {
