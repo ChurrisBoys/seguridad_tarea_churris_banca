@@ -57,7 +57,7 @@ const CreateTransactionButton = () => {
         };
 
         try {
-            const response = await fetch('http://172.24.131.198:3001/api/transactions', {
+            const response = await fetch('http://172.24.131.195:3001/api/transactions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
