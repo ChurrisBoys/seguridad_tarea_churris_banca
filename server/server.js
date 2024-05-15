@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
+const fetch = require('node-fetch');
 
 // Packages for image processing
 const bodyParser = require('body-parser');
