@@ -54,7 +54,7 @@ function startServer(db) {
     const transactionData = req.body; // This contains the data sent from the React app
     console.log("HOLA! Estoy antes del try, dentro de /api/transaction");
     try {
-        const response = await fetch('http://172.24.131.198/cgi-bin/helloworld.cgi', {
+        const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/helloworld.cgi', {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain'
