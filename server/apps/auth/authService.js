@@ -6,7 +6,7 @@ class AuthService {
     }
 
     async ComparePassword(user, inputedPassword) {
-        return compare(inputedPassword, user.password);
+        return await compare(inputedPassword, user.password);
     }
 
     async GetUser(username) {
@@ -26,6 +26,10 @@ class AuthService {
 
     async LogIn(username, inputedPassword) {
         var user = await this.GetUser(username);
+        console.log(user);
+        if (!user) {
+            throw new Error('User not found');
+        }
         if (await this.ComparePassword(user, inputedPassword)) {
             return this.sign(user);
         } else {

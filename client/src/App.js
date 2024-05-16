@@ -39,17 +39,23 @@ function App() {
         },
         body: JSON.stringify({ username, password }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then((data) => {
-          console.log('Success:', data);
-          // Do something with the data
+          localStorage.setItem('token', data.token); // Store JWT token
+          window.location.href = '/social'; // Redirect to the social media page
         })
         .catch((error) => {
           console.error('Error:', error);
+          alert('Login failed. Please try again.'); // User-friendly error message
         });
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error:', error);
+      alert('Login failed. Please try again.'); // User-friendly error message
     }
   };
 
@@ -57,7 +63,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-         {/* <div>   */}
+        {/* <div>   */}
         {/* {data ? <p>{data.message}</p> : <p>Loading...</p>} */}
         {/* </div>  */}
         <img src={logo} className="App-logo" alt="logo" />

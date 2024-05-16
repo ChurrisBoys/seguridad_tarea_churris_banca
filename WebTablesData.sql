@@ -41,13 +41,13 @@ CREATE TABLE `Follows` (
 
 
 INSERT INTO churrisbanca_social.Users (username,password) VALUES
-	 ('Alonso','$2a$10$IssUlhhFTLxbh.YiFQshGeeIhpVEZmvTlC7zB058lEiFQ8pv7QYb.'),
-	 ('Carlos','$2a$10$h1NR0PuyyZvxN1SIS97sT.nwnt1inPYk.T9J0TDhxH/ewRdVa6YYC'),
-	 ('Emilia','$2a$10$je7mgB/bF7nMwszes8iqnOYgy.NQcbqt6h/S9OPGtpBY6FUvF1PmG'),
-	 ('Brandon','$2a$10$je7mgB/bF7nMwszes8iqnOYgy.NQcbqt6h/S9OPGtpBY6FUvF1PmG'),
-   ('Carlitos','$2a$10$MSeHUpOM5X0eCHAHfV37WOtn1q7.HyGuRTTaJcANejIjggrF6hCnq'),
-   ('Ernesto','$2a$10$8EmE72qDQfvJNZqe7qDO1.U7ZBSwkhToaf3cDPPbSz/cA6rXqBmDm'),
-   ('Camilo','$2a$10$Ft3BqlzlWA7WVaHHDVfDu.2I9pQXn25cJjzuiJyQoo/gwOxbtPgU.');
+	 ('Alonso','$2b$10$6a9GKsto1J7U2VodE1hk2.V4MzlHXsJ4X2Ky/7.tnfo7TMS5t6Ni2'),
+	 ('Carlos','$2b$10$nciN1H7YN5rOSjL.WH.0SuxfBieB3xws8uGIBJ5aHc82m5gMW2zLy'),
+	 ('Emilia','$2b$10$6Q7QgILx9TtY7r3.ljWeBOhCkga29Y/GOZYg6FS3sYXtF3Frz684G'),
+	 ('Brandon','$2b$10$6FbKLWqdriggLdeG6VVPrulqSOZwHx7wOEKocHRGfsL/Ve28npAgW'),
+   ('Carlitos','$2b$10$S.kmHOqYEsChzPuLD6a5/.W8ZjEzcoTv9LDKI.YmuD1Semhz/Sq.W'),
+   ('Ernesto','$2b$10$n7jRF90rdu05y30mbnr9Hez.YUqlHzL0N5DQGPANO95WEWBZ/4hyi'),
+   ('Camilo','$2b$10$YUH9bBKUkLjZkwCs/Ni8UO5TBRngF/RW//5jl.wtNWjfZMLD/e9iO');
 INSERT INTO churrisbanca_social.Posts (username,description) VALUES
 	 ('Carlos','oal'),
 	 ('Carlos','post1'),

@@ -1,4 +1,4 @@
-const UserRepository = require('./userRepository.js');
+const UserRepository = require('./userDataAccess.js');
 
 class UserService {
   constructor(db) {
@@ -6,7 +6,7 @@ class UserService {
   }
 
     async GetUserByUsername(username) {
-        return this.userRepository.GetUserByUsername(username);
+        return this.userRepository.getUserByUsername(username);
     }
 }
 

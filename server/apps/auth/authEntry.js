@@ -12,7 +12,9 @@ function createAuthRouter(userService, secretKey) {
 
         try {
             const token = await authService.LogIn(username, password);
+            console.log('Token:', token);
             res.json({ token }); 
+            
         } catch (error) {
             // More specific error handling 
             if (error.message === 'Invalid username or password') {

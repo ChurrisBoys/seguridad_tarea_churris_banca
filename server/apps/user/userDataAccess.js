@@ -5,15 +5,21 @@ class UserDataAccess {
         this.connection = connection;
     }
 
-    async GetUserByUsername(username) {
-        const query = 'SELECT * FROM Users WHERE username = ?';
-        const values = [username];
-        
-        await this.connection.query(query, values, (err, results) => {
-            if (err) {
-                console.error('Error fetching user by username: ' + err.stack);
-            }
-            return results[0];
+    async getUserByUsername(username) {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Users WHERE username = ?';
+            const values = [username];
+
+            this.connection.query(query, values, (err, results) => {
+                if (err) {
+                    console.error('Error fetching user by username:', err);
+                    reject(err); // Reject the promise on error
+                } else {
+                    resolve(results[0]); // Resolve with the first result (or null if none)
+                }
+            });
         });
     }
 }
+
+module.exports = UserDataAccess;

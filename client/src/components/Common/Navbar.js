@@ -10,6 +10,8 @@ function Navbar() {
     const navigate = useNavigate();
 
     const handleExit = () => {
+        // Delete the token from local storage
+        localStorage.removeItem('token');
         navigate('/');
     };
 
