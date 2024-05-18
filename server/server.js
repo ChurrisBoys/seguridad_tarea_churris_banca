@@ -58,7 +58,7 @@ function startServer(db) {
   })
 
   app.get('/api/posts', (req, res) => {
-    fetchPosts(db, res);
+    fetchPosts(db, req, res);
   })
 
   app.post('/api/posts/liked', (req, res) => {
@@ -142,12 +142,17 @@ function createPosts(db, req, res) {
     createPost(req, null);
 }
 
-function fetchPosts(db, res) {
-  db.query('SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes \
-  FROM Posts p \
-  LEFT JOIN Likes l ON \
-  l.post_id = p.id \
-  GROUP BY p.id', (err, results) => {
+function fetchPosts(db, req, res) {
+  const currentUser = '\'' + req.query.cu + '\'';
+  const postFromFollowingQuery = `
+    SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
+    FROM Posts p
+    LEFT JOIN Likes l ON
+    l.post_id = p.id
+    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ${currentUser})
+    GROUP BY p.id`;
+  
+  db.query(postFromFollowingQuery, (err, results) => {
     if (err) {
       res.status(500).send('Error fetching posts');
       return;

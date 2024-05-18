@@ -40,7 +40,7 @@ export default function DisplayPosts(props) {
 	useEffect(() => {
 		const fetchPosts = async () => {
 			try {
-			  const response = await fetch('http://localhost:3001/api/posts');
+			  const response = await fetch('http://localhost:3001/api/posts?cu=' + 'Emilia'); // TODO(us): change to actual user
 			  const databasePosts = await response.json();
 			  setPosts(databasePosts);
 			} catch (error) {
