@@ -1,6 +1,8 @@
 CREATE TABLE `Users` (
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL UNIQUE,
+  `telnum` varchar(8) NOT NULL,
   PRIMARY KEY (`username`)
 );
 
@@ -40,14 +42,21 @@ CREATE TABLE `Follows` (
 
 
 
-INSERT INTO churrisbanca_social.Users (username,password) VALUES
-	 ('Alonso','$2b$10$6a9GKsto1J7U2VodE1hk2.V4MzlHXsJ4X2Ky/7.tnfo7TMS5t6Ni2'),
-	 ('Carlos','$2b$10$nciN1H7YN5rOSjL.WH.0SuxfBieB3xws8uGIBJ5aHc82m5gMW2zLy'),
-	 ('Emilia','$2b$10$6Q7QgILx9TtY7r3.ljWeBOhCkga29Y/GOZYg6FS3sYXtF3Frz684G'),
-	 ('Brandon','$2b$10$6FbKLWqdriggLdeG6VVPrulqSOZwHx7wOEKocHRGfsL/Ve28npAgW'),
-   ('Carlitos','$2b$10$S.kmHOqYEsChzPuLD6a5/.W8ZjEzcoTv9LDKI.YmuD1Semhz/Sq.W'),
-   ('Ernesto','$2b$10$n7jRF90rdu05y30mbnr9Hez.YUqlHzL0N5DQGPANO95WEWBZ/4hyi'),
-   ('Camilo','$2b$10$YUH9bBKUkLjZkwCs/Ni8UO5TBRngF/RW//5jl.wtNWjfZMLD/e9iO');
+INSERT INTO churrisbanca_social.Users (username,password, email, telnum) VALUES
+	 ('Alonso','$2b$10$6a9GKsto1J7U2VodE1hk2.V4MzlHXsJ4X2Ky/7.tnfo7TMS5t6Ni2',
+   'alonso@gmail.com','13245423'),
+	 ('Carlos','$2b$10$nciN1H7YN5rOSjL.WH.0SuxfBieB3xws8uGIBJ5aHc82m5gMW2zLy',
+   'carlos@gmail.com','78094321'),
+	 ('Emilia','$2b$10$6Q7QgILx9TtY7r3.ljWeBOhCkga29Y/GOZYg6FS3sYXtF3Frz684G',
+   'emilia@gmail.com','32418675'),
+	 ('Brandon','$2b$10$6FbKLWqdriggLdeG6VVPrulqSOZwHx7wOEKocHRGfsL/Ve28npAgW',
+   'brandon@gmail.com','12348567'),
+   ('Carlitos','$2b$10$S.kmHOqYEsChzPuLD6a5/.W8ZjEzcoTv9LDKI.YmuD1Semhz/Sq.W',
+   'carlitossxd@gmail.com','88889999'),
+   ('Ernesto','$2b$10$n7jRF90rdu05y30mbnr9Hez.YUqlHzL0N5DQGPANO95WEWBZ/4hyi',
+   'ernesto@gmail.com', '67329843'),
+   ('Camilo','$2b$10$YUH9bBKUkLjZkwCs/Ni8UO5TBRngF/RW//5jl.wtNWjfZMLD/e9iO',
+   'camilo@gmail.com', '43349876');
 INSERT INTO churrisbanca_social.Posts (username,description) VALUES
 	 ('Carlos','oal'),
 	 ('Carlos','post1'),
@@ -64,13 +73,12 @@ INSERT INTO churrisbanca_social.Follows(user1, user2) VALUES
    ('Emilia', 'Brandon');
 
 
-
-
 TRUNCATE TABLE Users;
 
 
 Drop TABLE churrisbanca_social.Users; 
 Drop TABLE churrisbanca_social.Likes; 
 Drop TABLE churrisbanca_social.Posts;
+Drop TABLE churrisbanca_social.Follows;
 
 
