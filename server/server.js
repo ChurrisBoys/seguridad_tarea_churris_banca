@@ -12,9 +12,11 @@ const fs = require('fs');
 // Routers for the different functionalities
 const createAuthRouter = require('./apps/auth/authEntry');
 
+// Middleware
+const authenticateToken = require('./libraries/Session/authMiddleware');
+
 //Services
 const UserService = require('./apps/user/userService');
-
 
 const app = express();
 const port = 3001;
@@ -54,11 +56,11 @@ function startServer(db) {
     createPosts(db, req, res);
   })
 
-  app.get('/api/posts', (req, res) => {
+  app.get('/api/posts', authenticateToken , (req, res) => {
     fetchPosts(db, req, res);
   })
 
-  app.post('/api/posts/liked', (req, res) => {
+  app.post('/api/posts/liked', authenticateToken, (req, res) => {
     likeOrDislikePost(db, req, res);
   })
 
