@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
+require('dotenv').config({ path: './secrets.env'});
 
 // Packages for image processing
 const bodyParser = require('body-parser');
@@ -22,18 +23,14 @@ app.use(bodyParser.json());
 const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
 
 // Setting up the database connection
-// Read from the secrets file
-const secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 const db = mysql.createConnection({
-  host: secrets.connection.host,
-  user: secrets.connection.user,
-  password: secrets.connection.password,
-  database: secrets.connection.database
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database : process.env.DB_NAME
 });
 
-// Setting up the JWT secret key
-const jwtSecretKey = secrets.security.jwtSecret;
-
+const jwtSecretKey = process.env.JWT_SECRET;
 
 db.connect(err => {
   if (err) {

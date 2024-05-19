@@ -3,8 +3,8 @@ const router = express.Router();
 const AuthService = require('./authService'); // Assuming AuthService is in the same directory
 const HS384Strategy = require('../../libraries/JWT/HS384Strategy'); // Assuming HS384Strategy is in the same directory
 
-function createAuthRouter(userService, secretKey) {
-    const jwtSigning = new HS384Strategy(secretKey);
+function createAuthRouter(userService) {
+    const jwtSigning = new HS384Strategy(process.env.JWT_SECRET);
     const authService = new AuthService(userService, jwtSigning);
 
     router.post('/login', async (req, res) => {
