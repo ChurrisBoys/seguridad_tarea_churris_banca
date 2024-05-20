@@ -12,7 +12,6 @@ function createAuthRouter(userService) {
 
         try {
             const token = await authService.LogIn(username, password);
-            console.log('Token:', token);
             res.json({ token }); 
             
         } catch (error) {

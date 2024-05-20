@@ -11,7 +11,15 @@ class HS384Strategy extends JWTSigningStrategy {
   }
 
   verify(token) {
-    return jwt.verify(token, this.secretKey);
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, this.secretKey, { algorithms: ['HS384'] }, (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(user);
+        }
+      });
+    });
   }
 }
 

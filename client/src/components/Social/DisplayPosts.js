@@ -22,7 +22,10 @@ export default function DisplayPosts(props) {
 			+ '&liked=' + liked;
 
 		const response = await fetch(serverOperationString, {
-			method: 'POST'
+			method: 'POST',
+			headers: {
+				'authorization ': 'Bearer ' + localStorage.getItem('token')
+			},
 		});
 		if (!response.ok) {
 			throw new Error('Error liking or disliking post');
@@ -40,7 +43,13 @@ export default function DisplayPosts(props) {
 	useEffect(() => {
 		const fetchPosts = async () => {
 			try {
-			  const response = await fetch('http://localhost:3001/api/posts?cu=' + 'Emilia'); // TODO(us): change to actual user
+			  const response = await fetch('http://localhost:3001/api/posts?cu=' + 'Emilia', 
+				{
+					headers: {
+						'authorization': 'Bearer ' + localStorage.getItem('token')
+					}
+				}
+			  ); // TODO(us): change to actual user
 			  const databasePosts = await response.json();
 			  setPosts(databasePosts);
 			} catch (error) {

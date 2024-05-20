@@ -4,6 +4,7 @@ import './SearchFriends.css';
 import { Link } from 'react-router-dom';
 import Layout from "../../Common/Layout";
 import config from "../../../config";
+import { authFetch } from '../../Common/Utils';
 
 export default function SearchFriends() {
     const [friends, setFriends] = useState([]);
@@ -15,7 +16,8 @@ export default function SearchFriends() {
 
     const searchUsers = async (currentUser) => {
         try {
-            const response = await fetch(`${config.BASE_URL}/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
+            const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
+            console.log("Status " + response.status)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
