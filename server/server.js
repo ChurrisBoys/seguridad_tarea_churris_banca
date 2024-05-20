@@ -75,7 +75,47 @@ function startServer(db) {
   app.get('/api/friends', (req, res) => {
     searchUsers(db, req, res);
   })
+  
+  app.post('/getBalance', async (req, res) => {
+  const { username } = req.body;
+  console.log("estoy en getBalance");
+  console.log(username);
+  try {
+    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain\n\n',
+      },
+      body: `username=${username}`, // Ensure encoding for safety
+    });
 
+    console.log("response");
+    console.log(response);
+
+    const data = await response.text();
+    console.log("Received Data:", data);
+
+    const match = data.match(/Username: (.*), Money: (.*), Currency: (.)/); // Change the regex to match a single character for currency
+
+    if (match) {
+      const balanceData = {
+        username: match[1],
+        amount: parseFloat(match[2]),
+        currency: match[3] === '1' ? 'Churricoin' : 'Euro', // Adjust the currency naming
+      };
+
+      console.log("res: ");
+      console.log(balanceData);
+      res.json(balanceData);
+    } else {
+      res.status(500).json({ error: 'Unexpected response format from CGI script' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
+  }
+  });
+
+  
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
   });
