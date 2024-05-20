@@ -88,6 +88,10 @@ function BankingFeed({ transactions, currentPage, setPage }) {
             <Layout>
                 <div class="row">
                     <div class="col-10">
+                        <div className="currency-amount-info">
+                            <p>Currency: USD</p>
+                            <p>Total Amount: {transactions.reduce((sum, transaction) => sum + transaction.amount, 0)}</p>
+                        </div>
                         <TransactionTable transactions={transactions} />
                         {NextPageButton({ currentPage, setPage })}
 
