@@ -3,6 +3,7 @@ import '../SocialFeed.css';
 import './SearchFriends.css';
 import { Link } from 'react-router-dom';
 import Layout from "../../Common/Layout";
+import config from "../../../config";
 
 export default function SearchFriends() {
     const [friends, setFriends] = useState([]);
@@ -14,7 +15,7 @@ export default function SearchFriends() {
 
     const searchUsers = async (currentUser) => {
         try {
-            const response = await fetch(`http://localhost:3001/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
+            const response = await fetch(`${config.BASE_URL}/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -28,7 +29,7 @@ export default function SearchFriends() {
 
     const followUser = async (username) => {
         try {
-            const response = await fetch(`http://localhost:3001/api/follows/${username}`, {
+            const response = await fetch(`${config.BASE_URL}/api/follows/${username}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
