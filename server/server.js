@@ -84,7 +84,7 @@ function startServer(db) {
     const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
       method: 'POST',
       headers: {
-        'Content-Type': 'text/plain\n\n',
+        'Content-Type': 'application/json\n\n',
       },
       body: `username=${username}`, // Ensure encoding for safety
     });
@@ -92,16 +92,18 @@ function startServer(db) {
     console.log("response");
     console.log(response);
 
-    const data = await response.text();
+    const data = await response.json();
     console.log("Received Data:", data);
 
-    const match = data.match(/Username: (.*), Money: (.*), Currency: (.)/); // Change the regex to match a single character for currency
-
-    if (match) {
+    // Sanitizing received data from cgi
+    const usernameMatch = data.Username.match(/[a-zA-Z]+/);
+    const balanceMatch = data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
+    const currencyMatch = data.Currency.match(/[a-zA-Z]+/);
+    if (usernameMatch && balanceMatch && currencyMatch) {
       const balanceData = {
-        username: match[1],
-        amount: parseFloat(match[2]),
-        currency: match[3] === '1' ? 'Churricoin' : 'Euro', // Adjust the currency naming
+        username: usernameMatch[0],
+        balance: parseFloat(balanceMatch),
+        currency: currencyMatch[0]
       };
 
       console.log("res: ");

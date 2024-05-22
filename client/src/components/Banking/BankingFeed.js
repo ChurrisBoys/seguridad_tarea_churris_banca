@@ -81,7 +81,7 @@ function TransactionTable({ transactions }) {
 }
 
 function BankingFeed({ transactions, currentPage, setPage }) {
-    const [currencyInfo, setCurrencyInfo] = useState({ currency: '', amount: 0 });
+    const [currencyInfo, setCurrencyInfo] = useState({ currency: '', balance: 0 });
 
     
     useEffect(() => {
@@ -94,18 +94,8 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     },
                     body: JSON.stringify({ username: 'Emilia' }),
                 });
-                const data = await response.text();
-                const lines = data.trim().split('\n');
-                if (lines.length === 3) {
-                    const balanceData = {
-                        username: lines[0].split(": ")[1].trim(),
-                        amount: parseFloat(lines[1].split(": ")[1].trim()),
-                        currency: lines[2].split(": ")[1].trim() === 'Churricoin' ? 'Churricoin' : 'Euro',
-                    };
-                    setCurrencyInfo(balanceData);
-                } else {
-                    console.error('Unexpected response format from server');
-                }
+                const data = await response.json();
+                setCurrencyInfo(data);
             } catch (error) {
                 console.error('Error fetching balance data:', error);
             }
@@ -121,7 +111,7 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     <div className="col-10">
                         <div className="currency-amount-info">
                             <p>Currency: {currencyInfo.currency}</p>
-                            <p>Total Amount: {currencyInfo.amount}</p>
+                            <p>Total Amount: {currencyInfo.balance}</p>
                         </div>
                         <TransactionTable transactions={transactions} />
                         <NextPageButton currentPage={currentPage} setPage={setPage} />
