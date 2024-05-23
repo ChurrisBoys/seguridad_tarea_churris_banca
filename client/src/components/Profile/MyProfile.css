@@ -5,15 +5,16 @@
     display: flex;
 }
 
-.user-text {
-    margin-left: 6%;
+.modify-personal-info-button {
+    position: absolute;
+    top: 0px;
+    right: 120px;
 }
 
 .create-post-button{
     position: absolute;
     top: 0px;
     right: 0px;
-
 }
 
 .user-icon {
