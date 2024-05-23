@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
@@ -79,7 +78,15 @@ function startServer(db) {
 
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
-  });
+  })
+
+  app.get('/api/profile/:username', (req, res) => {
+    fetchUserData(db, req, res);
+  })
+
+  app.put('/api/profile/:username', (req, res) => {
+    updateProfile(db, req, res);
+  })
 
   startListening();
 }
@@ -337,5 +344,41 @@ function followOrUnfollowUser(db, req, res) {
       }
     });
   });
+}
+
+function updateProfile(db, req, res) {
+  const username = req.params.username;
+  const { email, telnum } = req.body;
+
+  const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
+  const values = [email, telnum, username];
+  db.query(query, values, (err, results) => {
+    if (err) {
+      res.status(500).send({ error: 'Error updating profile' });
+      console.log(err);
+      return
+    }
+    res.status(200).send({ message: 'Profile updated successfully' });
+  });
+}
+
+function fetchUserData(db, req, res) {
+  const username = req.params.username;
+
+  const query = 'SELECT email, telnum FROM Users WHERE username = ?';
+  const values = [username];
+
+  db.query(query, values, (err, results) => {
+    if (err) {
+      res.status(500).send({ error: 'Error fetching user data' });
+      console.log(err);
+      return
+    }
+    if (results.length > 0) {
+      res.status(200).json(results[0]);
+    } else {
+      res.status(404).send({ error: 'User not found' });
+    }
+  })
 }
 
