@@ -7,11 +7,19 @@ class HS384Strategy extends JWTSigningStrategy {
   }
 
   sign(payload) {
-    return jwt.sign(payload, this.secretKey, { algorithm: 'HS384' });
+    return jwt.sign(payload, this.secretKey, { algorithm: 'HS384' }, { expiresIn: '1h' });
   }
 
   verify(token) {
-    return jwt.verify(token, this.secretKey);
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, this.secretKey, { algorithms: ['HS384'] }, (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(user);
+        }
+      });
+    });
   }
 }
 

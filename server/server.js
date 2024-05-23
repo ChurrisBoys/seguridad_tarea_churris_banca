@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
+require('dotenv').config({ path: './secrets.env'});
 
 // Packages for image processing
 const bodyParser = require('body-parser');
@@ -10,9 +11,11 @@ const fs = require('fs');
 // Routers for the different functionalities
 const createAuthRouter = require('./apps/auth/authEntry');
 
+// Middleware
+const authenticateToken = require('./libraries/Session/authMiddleware');
+
 //Services
 const UserService = require('./apps/user/userService');
-
 
 const app = express();
 const port = 3001;
@@ -21,18 +24,14 @@ app.use(bodyParser.json());
 const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
 
 // Setting up the database connection
-// Read from the secrets file
-const secrets = JSON.parse(fs.readFileSync('secrets.json', 'utf8'));
 const db = mysql.createConnection({
-  host: secrets.connection.host,
-  user: secrets.connection.user,
-  password: secrets.connection.password,
-  database: secrets.connection.database
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database : process.env.DB_NAME
 });
 
-// Setting up the JWT secret key
-const jwtSecretKey = secrets.security.jwtSecret;
-
+const jwtSecretKey = process.env.JWT_SECRET;
 
 db.connect(err => {
   if (err) {
@@ -56,11 +55,11 @@ function startServer(db) {
     createPosts(db, req, res);
   })
 
-  app.get('/api/posts', (req, res) => {
+  app.get('/api/posts', authenticateToken , (req, res) => {
     fetchPosts(db, req, res);
   })
 
-  app.post('/api/posts/liked', (req, res) => {
+  app.post('/api/posts/liked', authenticateToken, (req, res) => {
     likeOrDislikePost(db, req, res);
   })
 
@@ -75,7 +74,49 @@ function startServer(db) {
   app.get('/api/friends', (req, res) => {
     searchUsers(db, req, res);
   })
+  
+  app.post('/getBalance', async (req, res) => {
+  const { username } = req.body;
+  console.log("estoy en getBalance");
+  console.log(username);
+  try {
+    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json\n\n',
+      },
+      body: `username=${username}`, // Ensure encoding for safety
+    });
 
+    console.log("response");
+    console.log(response);
+
+    const data = await response.json();
+    console.log("Received Data:", data);
+
+    // Sanitizing received data from cgi
+    const usernameMatch = data.Username.match(/[a-zA-Z]+/);
+    const balanceMatch = data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
+    const currencyMatch = data.Currency.match(/[a-zA-Z]+/);
+    if (usernameMatch && balanceMatch && currencyMatch) {
+      const balanceData = {
+        username: usernameMatch[0],
+        balance: parseFloat(balanceMatch),
+        currency: currencyMatch[0]
+      };
+
+      console.log("res: ");
+      console.log(balanceData);
+      res.json(balanceData);
+    } else {
+      res.status(500).json({ error: 'Unexpected response format from CGI script' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
+  }
+  });
+
+  
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
   })
