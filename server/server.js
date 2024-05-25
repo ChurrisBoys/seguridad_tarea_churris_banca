@@ -67,54 +67,17 @@ function startServer(db) {
     fetchPostsFromUser(db, req, res);
   })
 
-  app.post('/api/follows/:username', (req, res) => {
+  app.get('/api/follows/:username', authenticateToken, (req, res) => {
     followOrUnfollowUser(db, req, res);
   })
 
-  app.get('/api/friends', (req, res) => {
+  app.get('/api/friends', authenticateToken, (req, res) => {
     searchUsers(db, req, res);
   })
   
   app.post('/getBalance', async (req, res) => {
-  const { username } = req.body;
-  console.log("estoy en getBalance");
-  console.log(username);
-  try {
-    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json\n\n',
-      },
-      body: `username=${username}`, // Ensure encoding for safety
-    });
-
-    console.log("response");
-    console.log(response);
-
-    const data = await response.json();
-    console.log("Received Data:", data);
-
-    // Sanitizing received data from cgi
-    const usernameMatch = data.Username.match(/[a-zA-Z]+/);
-    const balanceMatch = data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
-    const currencyMatch = data.Currency.match(/[a-zA-Z]+/);
-    if (usernameMatch && balanceMatch && currencyMatch) {
-      const balanceData = {
-        username: usernameMatch[0],
-        balance: parseFloat(balanceMatch),
-        currency: currencyMatch[0]
-      };
-
-      console.log("res: ");
-      console.log(balanceData);
-      res.json(balanceData);
-    } else {
-      res.status(500).json({ error: 'Unexpected response format from CGI script' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
-  }
-  });
+    getBalance(db, req, res);
+  })
 
   
   app.get('/api/data', (req, res) => {
@@ -297,7 +260,7 @@ function fetchPostsFromUser(db, req, res) {
 
 function searchUsers(db, req, res) {
   const searchTerm = req.query.term;
-  const currentUser = req.query.currentUser;
+  const currentUser = req.user.username;
 
   if (!searchTerm || !currentUser) {
     res.status(400).send('Search term and current user are required');
@@ -334,7 +297,7 @@ function searchUsers(db, req, res) {
 
 
 function followOrUnfollowUser(db, req, res) {
-  const follower = req.body.follower;
+  const follower = req.user.username;
   const followedUser = req.params.username;
 
   // Check if both users exist
@@ -421,5 +384,46 @@ function fetchUserData(db, req, res) {
       res.status(404).send({ error: 'User not found' });
     }
   })
+}
+
+async function getBalance(db, req, res) {
+  const { username } = req.body;
+  console.log("estoy en getBalance");
+  console.log(username);
+  try {
+    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json\n\n',
+      },
+      body: `username=${username}`, // Ensure encoding for safety
+    });
+
+    console.log("response");
+    console.log(response);
+
+    const data = await response.json();
+    console.log("Received Data:", data);
+
+    // Sanitizing received data from cgi
+    const usernameMatch = data.Username.match(/[a-zA-Z]+/);
+    const balanceMatch = data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
+    const currencyMatch = data.Currency.match(/[a-zA-Z]+/);
+    if (usernameMatch && balanceMatch && currencyMatch) {
+      const balanceData = {
+        username: usernameMatch[0],
+        balance: parseFloat(balanceMatch),
+        currency: currencyMatch[0]
+      };
+
+      console.log("res: ");
+      console.log(balanceData);
+      res.json(balanceData);
+    } else {
+      res.status(500).json({ error: 'Unexpected response format from CGI script' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
+  }
 }
 

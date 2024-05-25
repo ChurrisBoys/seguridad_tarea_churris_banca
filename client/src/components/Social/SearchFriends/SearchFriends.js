@@ -11,12 +11,12 @@ export default function SearchFriends() {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        searchUsers('Emilia');  // TODO(us): change to actual user 
+        searchUsers();
     }, [searchTerm]);
 
-    const searchUsers = async (currentUser) => {
+    const searchUsers = async () => {
         try {
-            const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}&currentUser=${currentUser}`);
+            const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
             console.log("Status " + response.status)
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -31,13 +31,7 @@ export default function SearchFriends() {
 
     const followUser = async (username) => {
         try {
-            const response = await fetch(`${config.BASE_URL}/api/follows/${username}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ follower: 'Emilia' }) // TODO(us): change to actual user 
-            });
+            const response = await authFetch(`${config.BASE_URL}/api/follows/${username}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
