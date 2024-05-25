@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import camera from './camera.png';
 import './CreatePost.css';
+import config from '../../config';
 
 function CreatePost() {
   const navigate = useNavigate();
@@ -13,6 +14,22 @@ function CreatePost() {
   const handleTransaction = () => {
     navigate('/banking');
   };
+
+  const handlePostCreation = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const response = await fetch(`${config.BASE_URL}/api/createpost`, {
+      method: 'POST',
+      headers: {
+        'authorization': 'Bearer ' + localStorage.getItem('token')
+      },
+      body: formData,
+    });
+    if(response.status == 200)
+      alert('Post created succesfully!!');
+    else
+      alert('Error creating Post, image may be too big');
+  } 
 
   return (
     <div className="CreatePost">
@@ -27,8 +44,8 @@ function CreatePost() {
         </div>
       </div>
       <form
-        action="http://localhost:3001/api/createpost"
         method="post"
+        onSubmit={handlePostCreation}
         encType="multipart/form-data"
         className="form-content"
       >
@@ -45,8 +62,7 @@ function CreatePost() {
             {/* the name atribute of the html means a value from the user that will be sent in a POST http request, inside the BODY of that request(you can check that in the Network tab when debugging from a browser) */}
           </div>
           <input name="user_image" id="image" type="file" accept="image/*" style={{ display: 'none' }} />
-          <textarea name="logged_in_user" className="nothing" >Emilia</textarea>
-           {/*// TODO(us): change to actual user */}
+          <textarea name="logged_in_user" className="nothing" >Emilia</textarea>    {/*// TODO(us): change to actual user */}
         </div>
       </form>
     </div>

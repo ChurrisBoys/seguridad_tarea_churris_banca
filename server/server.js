@@ -51,7 +51,7 @@ function startServer(db) {
     fetchUsers(db, res);
   })
 
-  app.post('/api/createpost', upload.single('user_image'), (req, res) => {
+  app.post('/api/createpost', authenticateToken, upload.single('user_image'), (req, res) => {
     createPosts(db, req, res);
   })
 
@@ -170,7 +170,7 @@ function createPosts(db, req, res) {
         res.status(500).send('Error creating Post, image may be too big');
         return;
       }
-      res.status(200).send('Post created succesfully');
+      res.status(200).json('Post created succesfully');
     });
   }
   // Use fs.readFile to read the image file
