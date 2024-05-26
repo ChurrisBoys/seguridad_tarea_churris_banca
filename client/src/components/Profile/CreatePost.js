@@ -15,35 +15,54 @@ function CreatePost() {
     navigate('/banking');
   };
 
+  const handleFriends = () => {
+    navigate('/social');
+  };
+
+  const handleProfile = () => {
+    navigate('/myprofile');
+  };
+
+
   const handlePostCreation = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const response = await fetch(`${config.BASE_URL}/api/createpost`, {
-      method: 'POST',
-      headers: {
-        'authorization': 'Bearer ' + localStorage.getItem('token')
-      },
-      body: formData,
-    });
-    if (response.status == 403) {
-      alert('You must be logged in, error: ' + response.status);
-    }
-
-    if(response.status == 200)
-      alert('Post created succesfully!!');
-    else
-      alert('Error creating Post, image may be too big');
+    
+    // Validation for post text
+    const postText = formData.get('user_description');
+    const postTextRegex = /^[a-zA-Z0-9,.?! ]{1,200}$/; // Regex for allowed characters and maximum length of 200
+    if (!postTextRegex.test(postText)) {
+      alert('Post text must not exceed 200 characters and can only include letters (upper or lower), numbers, spaces, periods, commas, ?, and !');
+    } else {
+    
+      const response = await fetch(`${config.BASE_URL}/api/createpost`, {
+        method: 'POST',
+        headers: {
+          'authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        body: formData,
+      });
+    
+      if (response.status == 403) {
+        alert('You must be logged in, error: ' + response.status);
+      }
+    
+      if(response.status == 200)
+        alert('Post created successfully!!');
+      else
+        alert('Error creating Post, image may be too big');
+  }
   } 
-
+  
   return (
     <div className="CreatePost">
       <div className="top-buttons">
         <div className="buttons-left">
-          <button className="button">Friends</button>
+          <button className="button" onClick={handleFriends}>Friends</button>
           <button className="button" onClick={handleTransaction}>Transactions</button>
         </div>
         <div className="buttons-right">
-          <button className="button">My Profile</button>
+          <button className="button" onClick={handleProfile}>My Profile</button>
           <button className="button" onClick={handleExit}>Exit</button>
         </div>
       </div>
