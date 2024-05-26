@@ -91,8 +91,8 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'authorization': 'Bearer ' + localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ username: 'Emilia' }),
                 });
                 const data = await response.json();
                 setCurrencyInfo(data);

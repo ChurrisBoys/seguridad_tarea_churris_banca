@@ -75,7 +75,7 @@ function startServer(db) {
     searchUsers(db, req, res);
   })
   
-  app.post('/getBalance', async (req, res) => {
+  app.post('/getBalance', authenticateToken, async (req, res) => {
     getBalance(db, req, res);
   })
 
@@ -154,16 +154,15 @@ function createPosts(db, req, res) {
 }
 
 function fetchPosts(db, req, res) {
-  const currentUser = '\'' + req.user.username + '\'';
   const postFromFollowingQuery = `
     SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
     FROM Posts p
     LEFT JOIN Likes l ON
     l.post_id = p.id
-    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ${currentUser})
+    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?)
     GROUP BY p.id`;
   
-  db.query(postFromFollowingQuery, (err, results) => {
+  db.query(postFromFollowingQuery, [req.user.username], (err, results) => {
     if (err) {
       res.status(500).send('Error fetching posts');
       return;
@@ -173,17 +172,17 @@ function fetchPosts(db, req, res) {
 }
 
 function likeOrDislikePost(db, req, res) {
-  const post_liker = '\'' + req.user.username + '\'';
+  const post_liker = req.user.username;
   const post_id = req.query.post_id;
-  const post_creator = '\'' + req.query.post_creator + '\'';
+  const post_creator = req.query.post_creator;
   const liked = req.query.liked;
 
   // Query to know if there was already a like or dislike to this post from the post_liker
   const likesQuery = `SELECT * FROM Likes l
-  WHERE l.username = ${post_liker}
-  AND l.post_id = ${post_id}
-  AND l.post_creator = ${post_creator}`;
-  db.query(likesQuery, (err, results) => {
+  WHERE l.username = ?
+  AND l.post_id = ?
+  AND l.post_creator = ?`;
+  db.query(likesQuery, [post_liker, post_id, post_creator], (err, results) => {
     if (err) {
       res.status(500).send('Error fetching likes');
       return;
@@ -192,10 +191,10 @@ function likeOrDislikePost(db, req, res) {
     // If the user already liked or disliked the post and clicked the same button, then remove its reaction
     if (results.length > 0 && results[0].liked === parseInt(liked)) {
       const deleteQuery = `DELETE FROM Likes
-      WHERE username = ${post_liker}
-      AND post_id = ${post_id}
-      AND post_creator = ${post_creator}`;
-      db.query(deleteQuery, (err, results) => {
+      WHERE username = ?
+      AND post_id = ?
+      AND post_creator = ?`;
+          db.query(deleteQuery, [post_liker, post_id, post_creator], (err, results) => {
         if (err) {
           res.status(500).send('Error removing reaction');
           return;
@@ -207,14 +206,14 @@ function likeOrDislikePost(db, req, res) {
     // If the post_liker already had a reaction to the post, then update the value
     else if (results.length > 0) {
       const updateQuery = `UPDATE Likes l
-      SET l.username = ${post_liker}
-      , l.post_id = ${post_id}
-      , l.post_creator = ${post_creator}
-      , l.liked = ${liked}
-      WHERE l.username = ${post_liker}
-      AND l.post_id = ${post_id}
-      AND l.post_creator = ${post_creator}`;
-      db.query(updateQuery, (err, results) => {
+      SET l.username = ?
+      , l.post_id = ?
+      , l.post_creator = ?
+      , l.liked = ?
+      WHERE l.username = ?
+      AND l.post_id = ?
+      AND l.post_creator = ?`;
+      db.query(updateQuery, [post_liker, post_id, post_creator, liked, post_liker, post_id, post_creator], (err, results) => {
         if (err) {
           res.status(500).send('Error updating likes');
           return;
@@ -225,8 +224,8 @@ function likeOrDislikePost(db, req, res) {
     // If there wasn't any reaction in the database, then create it
     else {
       const insertQuery = `INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALUES
-      (${post_liker},${post_id},${post_creator},${liked});`;
-      db.query(insertQuery, (err, results) => {
+      (?, ?, ?, ?);`;
+      db.query(insertQuery, [post_liker, post_id, post_creator, liked], (err, results) => {
         if (err) {
           res.status(500).send('Error inserting likes');
           return;
@@ -387,16 +386,14 @@ function fetchUserData(db, req, res) {
 }
 
 async function getBalance(db, req, res) {
-  const { username } = req.body;
   console.log("estoy en getBalance");
-  console.log(username);
   try {
     const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json\n\n',
       },
-      body: `username=${username}`, // Ensure encoding for safety
+      body: `username=${req.user.username}`, // Ensure encoding for safety
     });
 
     console.log("response");
