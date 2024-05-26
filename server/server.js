@@ -129,7 +129,19 @@ function createPosts(db, req, res) {
   const binaryImageData = null;
   const file = req.file;
 
+  
+
   const createPost = (req, binaryImageData) => {
+
+    if (!validators.validateNormalText(req.body.user_description)) {
+      return res.status(500).json({ error: 'Invalid data' });
+    }
+
+    if (!validators.validateUsername(req.body.logged_in_user)) {
+      return res.status(403).json({ error: 'Invalid data' });
+    }
+  
+
     // Creating the Post
     const createPostQuery = 'INSERT INTO churrisbanca_social.Posts (username,description,image) VALUES (?,?,?);';
     db.query(createPostQuery, [req.user.username, req.body.user_description, binaryImageData], (err, results) => {
@@ -158,6 +170,10 @@ function createPosts(db, req, res) {
 }
 
 function fetchPosts(db, req, res) {
+
+  if (!validators.validateUsername(req.query.cu)){
+    return res.status(403).json({ error: 'Invalid data' });
+  }
   const currentUser = '\'' + req.user.username + '\'';
   const postFromFollowingQuery = `
     SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
@@ -181,6 +197,11 @@ function likeOrDislikePost(db, req, res) {
   const post_id = req.query.post_id;
   const post_creator = '\'' + req.query.post_creator + '\'';
   const liked = req.query.liked;
+
+  if (!validators.validateUsername(req.query.post_liker) || !validators.validateUsername(req.query.post_creator)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+
 
   // Query to know if there was already a like or dislike to this post from the post_liker
   const likesQuery = `SELECT * FROM Likes l
@@ -244,6 +265,7 @@ function likeOrDislikePost(db, req, res) {
 
 function fetchPostsFromUser(db, req, res) {
   const username = req.params.username;
+
   if (!validators.validateUsername(username)) { 
     return res.status(403).json({ error: 'Invalid data' });
   }
@@ -273,6 +295,14 @@ function searchUsers(db, req, res) {
   if (!searchTerm || !currentUser) {
     res.status(400).send('Search term and current user are required');
     return;
+  }
+
+  if (!validators.validateUsername(searchTerm)) {
+    return res.status(500).json({ error: 'Invalid data' });
+  }
+
+  if (!validators.validateUsername(currentUser)) {
+    return res.status(403).json({ error: 'Invalid data' });
   }
 
   const query = `
@@ -307,6 +337,11 @@ function searchUsers(db, req, res) {
 function followOrUnfollowUser(db, req, res) {
   const follower = req.user.username;
   const followedUser = req.params.username;
+
+  if (!validators.validateUsername(follower) || !validators.validateUsername(followedUser)) {
+    return res.status(500).json({ error: 'Invalid data' });
+  }
+
 
   // Check if both users exist
   const checkUsersExistQuery = 'SELECT * FROM Users WHERE username IN (?, ?)';
@@ -362,6 +397,14 @@ function updateProfile(db, req, res) {
   const username = req.params.username;
   const { email, telnum } = req.body;
 
+  if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
+    return res.status(500).json({ error: 'Invalid data' });
+  }
+
+  if(!validators.validateUsername(username)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+
   const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
   const values = [email, telnum, username];
   db.query(query, values, (err, results) => {
@@ -376,6 +419,10 @@ function updateProfile(db, req, res) {
 
 function fetchUserData(db, req, res) {
   const username = req.params.username;
+
+  if(!validators.validateUsername(username)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
 
   const query = 'SELECT email, telnum FROM Users WHERE username = ?';
   const values = [username];
