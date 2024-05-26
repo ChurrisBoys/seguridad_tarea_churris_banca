@@ -9,6 +9,8 @@ import { authFetch } from '../../Common/Utils';
 export default function SearchFriends() {
     const [friends, setFriends] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3; 
 
     useEffect(() => {
         searchUsers();
@@ -17,12 +19,13 @@ export default function SearchFriends() {
     const searchUsers = async () => {
         try {
             const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
-            console.log("Status " + response.status)
+            console.log("Status " + response.status);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
             setFriends(data);
+            setCurrentPage(1);
         } catch (error) {
             console.error('Error fetching data:', error);
             setFriends([]);
@@ -35,12 +38,23 @@ export default function SearchFriends() {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            // Update search list
-            searchUsers();
+            searchUsers(); // Refresh the list after following/unfollowing
         } catch (error) {
             console.error('Error following user:', error);
         }
     };
+
+    const goToNextPage = () => {
+        let nextPage = currentPage + 1;
+        const totalPages = Math.ceil(friends.length / itemsPerPage);
+        if (nextPage > totalPages) {
+            nextPage = 1; // Loop back to the first page
+        }
+        setCurrentPage(nextPage);
+    };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const selectedFriends = friends.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <Layout>
@@ -57,7 +71,7 @@ export default function SearchFriends() {
                     <button className='Button Text' onClick={searchUsers}>Search friend</button>
                 </div>
                 <div className='Friends'>
-                {friends.map(friend => (
+                {selectedFriends.map(friend => (
                     <div key={friend.username} className='Friend'>
                         <div className='FriendBody'>
                             {friend.isMutual ? (
@@ -77,11 +91,9 @@ export default function SearchFriends() {
                     </div>
                 ))}
                 </div>
-                <Link to='/undefined'>
-                    <div className='NextButton'>
-                        <span className='Text Button'>Next</span>
-                    </div>
-                </Link>
+                <div className='NextButton' onClick={goToNextPage}>
+                    <span className='Text Button'>Next</span>
+                </div>
             </div>
         </Layout>
     );
