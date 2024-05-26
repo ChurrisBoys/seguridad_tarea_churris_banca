@@ -25,6 +25,10 @@ function CreatePost() {
       },
       body: formData,
     });
+    if (response.status == 403) {
+      alert('You must be logged in, error: ' + response.status);
+    }
+
     if(response.status == 200)
       alert('Post created succesfully!!');
     else
@@ -62,7 +66,6 @@ function CreatePost() {
             {/* the name atribute of the html means a value from the user that will be sent in a POST http request, inside the BODY of that request(you can check that in the Network tab when debugging from a browser) */}
           </div>
           <input name="user_image" id="image" type="file" accept="image/*" style={{ display: 'none' }} />
-          <textarea name="logged_in_user" className="nothing" >Emilia</textarea>    {/*// TODO(us): change to actual user */}
         </div>
       </form>
     </div>

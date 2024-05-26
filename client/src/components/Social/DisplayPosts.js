@@ -44,19 +44,22 @@ export default function DisplayPosts(props) {
 	useEffect(() => {
 		const fetchPosts = async () => {
 			try {
-			  const response = await fetch(`${config.BASE_URL}/api/posts?cu=` + 'Emilia',
+			const response = await fetch(`${config.BASE_URL}/api/posts?cu=` + 'Emilia',
 				{
 					headers: {
 						'authorization': 'Bearer ' + localStorage.getItem('token')
 					}
 				}
-			  ); // TODO(us): change to actual user
-			  const databasePosts = await response.json();
-			  setPosts(databasePosts);
-			} catch (error) {
-			  console.error('Failed to fetch posts', error);
+			);
+			if (response.status == 403) {
+				alert('You must be logged in, error: ' + response.status);
 			}
-		  };
+			const databasePosts = await response.json();
+			setPosts(databasePosts);
+			} catch (error) {
+				console.error('Failed to fetch posts', error);
+			}
+		};
 		
 		fetchPosts();
 	  }, [likeTrigger]); // Updating the posts when  liked or disliked

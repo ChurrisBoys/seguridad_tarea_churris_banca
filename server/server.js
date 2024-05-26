@@ -63,7 +63,7 @@ function startServer(db) {
     likeOrDislikePost(db, req, res);
   })
 
-  app.get('/api/posts/:username', (req, res) => {
+  app.get('/api/posts/', (req, res) => {
     fetchPostsFromUser(db, req, res);
   })
 
@@ -128,7 +128,7 @@ function createPosts(db, req, res) {
   const createPost = (req, binaryImageData) => {
     // Creating the Post
     const createPostQuery = 'INSERT INTO churrisbanca_social.Posts (username,description,image) VALUES (?,?,?);';
-    db.query(createPostQuery, [req.body.logged_in_user, req.body.user_description, binaryImageData], (err, results) => {
+    db.query(createPostQuery, [req.user.username, req.body.user_description, binaryImageData], (err, results) => {
       if (err) {
         res.status(500).send('Error creating Post, image may be too big');
         return;
@@ -154,7 +154,7 @@ function createPosts(db, req, res) {
 }
 
 function fetchPosts(db, req, res) {
-  const currentUser = '\'' + req.query.cu + '\'';
+  const currentUser = '\'' + req.user.username + '\'';
   const postFromFollowingQuery = `
     SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
     FROM Posts p
@@ -173,7 +173,7 @@ function fetchPosts(db, req, res) {
 }
 
 function likeOrDislikePost(db, req, res) {
-  const post_liker = '\'' + req.query.post_liker + '\'';
+  const post_liker = '\'' + req.user.username + '\'';
   const post_id = req.query.post_id;
   const post_creator = '\'' + req.query.post_creator + '\'';
   const liked = req.query.liked;
@@ -239,7 +239,7 @@ function likeOrDislikePost(db, req, res) {
 
 
 function fetchPostsFromUser(db, req, res) {
-  const username = req.params.username;
+  const username = req.user.username;
   const query = `
       SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
       FROM Posts p
