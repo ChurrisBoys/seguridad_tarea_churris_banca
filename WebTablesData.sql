@@ -42,35 +42,64 @@ CREATE TABLE `Follows` (
 
 
 
-INSERT INTO churrisbanca_social.Users (username,password, email, telnum) VALUES
-	 ('Alonso','$2b$10$6a9GKsto1J7U2VodE1hk2.V4MzlHXsJ4X2Ky/7.tnfo7TMS5t6Ni2',
-   'alonso@gmail.com','13245423'),
-	 ('Carlos','$2b$10$nciN1H7YN5rOSjL.WH.0SuxfBieB3xws8uGIBJ5aHc82m5gMW2zLy',
-   'carlos@gmail.com','78094321'),
-	 ('Emilia','$2b$10$6Q7QgILx9TtY7r3.ljWeBOhCkga29Y/GOZYg6FS3sYXtF3Frz684G',
-   'emilia@gmail.com','32418675'),
-	 ('Brandon','$2b$10$6FbKLWqdriggLdeG6VVPrulqSOZwHx7wOEKocHRGfsL/Ve28npAgW',
-   'brandon@gmail.com','12348567'),
-   ('Carlitos','$2b$10$S.kmHOqYEsChzPuLD6a5/.W8ZjEzcoTv9LDKI.YmuD1Semhz/Sq.W',
-   'carlitossxd@gmail.com','88889999'),
-   ('Ernesto','$2b$10$n7jRF90rdu05y30mbnr9Hez.YUqlHzL0N5DQGPANO95WEWBZ/4hyi',
-   'ernesto@gmail.com', '67329843'),
-   ('Camilo','$2b$10$YUH9bBKUkLjZkwCs/Ni8UO5TBRngF/RW//5jl.wtNWjfZMLD/e9iO',
-   'camilo@gmail.com', '43349876');
+INSERT INTO churrisbanca_social.Users (username, password, email, telnum) VALUES
+   ('brandon.moraumana','$2b$10$qvtuYui/.4lb4YQEnEvoMeD.5kOx914tw5YP3.Qi.Fzys4i8zhXrm',
+   'brandon.moraumana@ucr.ac.cr', '88881111'),
+   ('emilia.viquez','$2b$10$trsKjsBFp4s09tu02kFh1.jzaCO/zFIl/5C6mIzMOhbYKsjt0MRou',
+   'emilia.viquez@ucr.ac.cr', '88882222'),
+   ('esteban.leonrodriguez','$2b$10$madp3MZ/1dAEmwDM64GFfuD//q6XIYrT6iHieXcB24Bicfef5VTfe',
+   'esteban.leonrodriguez@ucr.ac.cr', '88883333'),
+   ('carlos.sanchezblanco','$2b$10$zLqCMGrnij5crxP1kgJqV.RBOycXRi4ce6fcroh9uktzwru9NP2ea',
+   'carlos.sanchezblanco@ucr.ac.cr', '88884444'),
+   ('maria.andres','$2b$10$O7QW73d0wkWYj7yVuG9b6..gU3saqdYNYif5HmkOIDWNlInrqyz6u',
+   'maria.andres@ucr.ac.cr', '88885555'),
+   ('randall.lopezvarela','$2b$10$lxY40r2I8Etvkeg/YVURdOxemCMSFOPVLRSQ0wkGgXLGriSTg0P4u',
+   'randall.lopezvarela@ucr.ac.cr', '88886666'),
+   ('gerardo.camposbadilla','$2b$10$RaO0ZWFOFhGLcLHO6zFG2eac2kAsY5h2S082/vyTCWefblXU82mGu',
+   'gerardo.camposbadilla@ucr.ac.cr', '88887777'),
+   ('carlos.ramirezmasis','$2b$10$9RINg5HZuzb7fSoygz0WxO24.gG2JBg4z3HdCnwOVz.sVqEUkS.6m',
+   'carlos.ramirezmasis@ucr.ac.cr', '88889999'),
+   ('cristian.ortegahurtado','$2b$10$vBOuok9NXjXJXDzNVp2RCOtAWM7ph.eeXPp2KFgC3Eak4R.Q4ISoy',
+   'cristian.ortegahurtado@ucr.ac.cr', '88880000'),
+   ('david.sanchezlopez','$2b$10$V8c7E1jtrG6ZmeQoA.pa8ugGa3S7ZOeyQZuitpJtwBu5eqEdn/2mG',
+   'david.sanchezlopez@ucr.ac.cr', '77771111'),
+   ('andre.villegas','$2b$10$NA35xwaQd1f5Nz/Y9xmGQuQx2c3L7cO2L13DFzesCXqybAxqxJZr2',
+   'andre.villegas@ucr.ac.cr', '77772222'),
+   ('andrey.menaespinoza','$2b$10$BSr7NnP2l4UdlxLwtyWZWeuLUWW6Y.3Q9CwA919r2w4kTOOijQr3C',
+   'andrey.menaespinoza@ucr.ac.cr', '77773333'),
+   ('jason.murillo','$2b$10$ETz7sURsR6i1LcaLHDn2UOL0GC5g9WViE7FAPrreGKY8ayzwIpkpO',
+   'jason.murillo@ucr.ac.cr', '77774444'),
+   ('yordi.robles','$2b$10$pfIgAgd9.ywXKZOvgROOc.R.ROvzSENO5Un99Lg9xWxyo9O8//QCW',
+   'yordi.robles@ucr.ac.cr', '77775555'),
+   ('genesis.herreraknyght','$2b$10$hNRAAcpmaN7ztbwJQO/A0uPB5wG.zPiYeWraQlmhOr/2fUsfFjqDa',
+   'genesis.herreraknyght@ucr.ac.cr', '77776666'),
+   ('sebastian.rodrigueztencio','$2b$10$67EedrhVd/FMTuUrbwQgieTHJ8AwmIEND7BqkJ961nlGZ/RicMZie',
+   'sebastian.rodrigueztencio@ucr.ac.cr', '77778888'),
+   ('jeremy.espinozamadrigal','$2b$10$cV5DS5bKL2o4JQ/rxkPQB.KmSbOar02aEhcM.o0yM6AFAZ8TIv6ym',
+   'jeremy.espinozamadrigal@ucr.ac.cr', '77779999'),
+   ('richard.garita','$2b$10$YNkb9mQtsWYKus4Vf5hDROaHUpliqk24CZ7SOI4wzGBdnnXrZvhAq',
+   'richard.garita@ucr.ac.cr', '66661111'),
+   ('dylan.tenorio','$2b$10$SL1UcVQgV7/gy5bgLlVEpO10ISjFVIYvRVNctldFZnnl4IMLtNxaq',
+   'dylan.tenorio@ucr.ac.cr', '66662222'),
+   ('eithel.vega','$2b$10$utU95XoNaDRCtysEDuf2heI/1.Z7j5K0cUQTCLWYUnKlz1feBf/E2',
+   'eithel.vega@ucr.ac.cr', '66663333');
+
 INSERT INTO churrisbanca_social.Posts (username,description) VALUES
-	 ('Carlos','oal'),
-	 ('Carlos','post1'),
-	 ('Carlos','post2'),
-	 ('Carlos','post3'),
-	 ('Carlos','xao');
+	 ('carlos.sanchezblanco','oal'),
+	 ('carlos.sanchezblanco','post1'),
+	 ('carlos.sanchezblanco','post2'),
+	 ('carlos.sanchezblanco','post3'),
+	 ('carlos.sanchezblanco','xao');
 INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALUES
-	 ('Alonso',1,'Carlos',1),
-	 ('Alonso',2,'Carlos',0),
-	 ('Carlos',1,'Carlos',1);
+	 ('esteban.leonrodriguez',1,'carlos.sanchezblanco',1),
+	 ('esteban.leonrodriguez',2,'carlos.sanchezblanco',0),
+	 ('carlos.sanchezblanco',1,'carlos.sanchezblanco',1);
 INSERT INTO churrisbanca_social.Follows(user1, user2) VALUES
-   ('Alonso', 'Emilia'),
-   ('Emilia', 'Alonso'),
-   ('Emilia', 'Brandon');
+   ('esteban.leonrodriguez', 'emilia.viquez'),
+   ('emilia.viquez', 'esteban.leonrodriguez'),
+   ('emilia.viquez', 'carlos.sanchezblanco'),
+   ('carlos.sanchezblanco', 'emilia.viquez'),
+   ('emilia.viquez', 'brandon.moraumana');
 
 
 TRUNCATE TABLE Users;
