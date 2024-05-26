@@ -9,7 +9,7 @@ const validatePhoneNumber = (phoneNumber) => {
 
 const validateEmail = (email) => {
   // Email should consist of letters, periods (letters@letters.letters)
-  const emailRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)*@[a-zA-Z]+(\.[a-zA-Z]+)+$/;
+  const emailRegex = /^[a-zA-Z]{1,80}(\.[a-zA-Z]{1,80})*@[a-zA-Z]{1,30}(\.[a-zA-Z]{1,30}){1,80}$/;
   return emailRegex.test(email);
 };
 

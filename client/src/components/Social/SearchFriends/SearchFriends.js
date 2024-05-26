@@ -16,7 +16,18 @@ export default function SearchFriends() {
         searchUsers();
     }, [searchTerm]);
 
+    const validateUsername = (username) => {
+        // Username should consist of only letters and one period in the middle
+        const usernameRegex = /^[a-zA-Z]{0,80}(\.[a-zA-Z]{0,80})?$/;
+        return usernameRegex.test(username);
+    };
+
+      
     const searchUsers = async () => {
+        if (!validateUsername(searchTerm)) {
+            alert('Invalid search');
+            return;
+        }
         try {
             const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
             console.log("Status " + response.status);

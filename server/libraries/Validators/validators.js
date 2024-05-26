@@ -2,19 +2,19 @@
 
 const validateUsername = (username) => {
   // Username should consist of only letters and one period in the middle
-  const usernameRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)?$/;
+  const usernameRegex = /^[a-zA-Z]{1,80}(\.[a-zA-Z]{1,80})?$/;
   return usernameRegex.test(username);
 };
 
 const validatePassword = (password) => {
   // Password should consist of only letters and numbers
-  const passwordRegex = /^[a-zA-Z0-9]+$/;
+  const passwordRegex = /^[[a-zA-Z0-9]]{1,80}$/;
   return passwordRegex.test(password);
 };
 
 const validateNormalText = (text) => {
   // Normal text can contain letters, numbers, spaces, commas, periods, exclamation points, and question marks
-  const normalTextRegex = /^[a-zA-Z0-9 ,.!?]+$/;
+  const normalTextRegex = /^[a-zA-Z0-9,.?! ]{1,200}$/;
   return normalTextRegex.test(text);
 };
 
@@ -32,7 +32,7 @@ const validatePhoneNumber = (phoneNumber) => {
 
 const validateEmail = (email) => {
   // Email should consist of letters, periods (letters@letters.letters)
-  const emailRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)*@[a-zA-Z]+(\.[a-zA-Z]+)+$/;
+  const emailRegex = /^[a-zA-Z]{1,80}(\.[a-zA-Z]{1,80})*@[a-zA-Z]{1,30}(\.[a-zA-Z]{1,30}){1,80}$/;
   return emailRegex.test(email);
 };
 

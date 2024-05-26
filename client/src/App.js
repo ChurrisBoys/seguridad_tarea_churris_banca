@@ -32,8 +32,8 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const usernameRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)?$/;
-    const passwordRegex = /^[a-zA-Z0-9]+$/;
+    const usernameRegex = /^[a-zA-Z]{1,80}(\.[a-zA-Z]{1,80})?$/;
+    const passwordRegex = /^[[a-zA-Z0-9]]{1,80}$/;
 
     if (!usernameRegex.test(username)) {
       alert('Invalid data');
