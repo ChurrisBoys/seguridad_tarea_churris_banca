@@ -32,6 +32,19 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const usernameRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)?$/;
+    const passwordRegex = /^[a-zA-Z0-9]+$/;
+
+    if (!usernameRegex.test(username)) {
+      alert('Invalid data');
+      return;
+    }
+  
+    if (!passwordRegex.test(password)) {
+      alert('Invalid data');
+      return;
+    }
+
     try {
       fetch(`${config.BASE_URL}/auth/login`, {
         method: 'POST',
