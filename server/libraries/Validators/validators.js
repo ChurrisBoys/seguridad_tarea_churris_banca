@@ -20,7 +20,7 @@ const validateNormalText = (text) => {
 
 const validateAmount = (amount) => {
   // Amount can be a number with or without a decimal part
-  const amountRegex = /^\d+(\.\d+)?$/;
+  const amountRegex = /^\d{1,6}(\.\d{1,3})?$/;
   return amountRegex.test(amount);
 };
 
