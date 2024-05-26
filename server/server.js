@@ -8,6 +8,10 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const fs = require('fs');
 
+// Packages for validating data
+const validators = require('./libraries/Validators/validators');
+
+
 // Routers for the different functionalities
 const createAuthRouter = require('./apps/auth/authEntry');
 
@@ -63,7 +67,7 @@ function startServer(db) {
     likeOrDislikePost(db, req, res);
   })
 
-  app.get('/api/posts/', (req, res) => {
+  app.get('/api/posts/:username', (req, res) => {
     fetchPostsFromUser(db, req, res);
   })
 
