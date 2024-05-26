@@ -239,13 +239,17 @@ function likeOrDislikePost(db, req, res) {
 
 
 function fetchPostsFromUser(db, req, res) {
-  const username = req.user.username;
+  const username = req.params.username;
+  if (!validators.validateUsername(username)) { 
+    return res.status(403).json({ error: 'Invalid data' });
+  }
   const query = `
       SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
       FROM Posts p
       LEFT JOIN Likes l ON l.post_id = p.id
       WHERE p.username = ?
       GROUP BY p.id
+      ORDER BY p.publish_date DESC
   `;
 
   db.query(query, [username], (err, results) => {
