@@ -443,8 +443,11 @@ function fetchUserData(db, req, res) {
 
 async function getBalance(db, req, res) {
   const { username } = req.body;
-  console.log("estoy en getBalance");
-  console.log(username);
+  
+  if(!validators.validateUsername(username)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+
   try {
     const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
       method: 'POST',
