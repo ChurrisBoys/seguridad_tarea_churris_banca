@@ -82,7 +82,10 @@ function startServer(db) {
   app.post('/getBalance', authenticateToken, async (req, res) => {
     getBalance(db, req, res);
   })
-
+  
+  app.post('/getUserTransactions', authenticateToken, async (req, res) => {
+    fetchUserTransactions(db, req, res);
+  })
   
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
@@ -482,3 +485,23 @@ async function getBalance(db, req, res) {
   }
 }
 
+async function fetchUserTransactions(db, req, res) {
+  if(!validators.validateUsername(req.user.username)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+  
+  try {
+    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json\n\n',
+      },
+      body: `username=${req.user.username}`, // Ensure encoding for safety
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
+  }
+}
