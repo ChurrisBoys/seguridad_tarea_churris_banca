@@ -8,7 +8,7 @@ const validateUsername = (username) => {
 
 const validatePassword = (password) => {
   // Password should consist of only letters and numbers
-  const passwordRegex = /^[[a-zA-Z0-9]]{1,80}$/;
+  const passwordRegex = /^[a-zA-Z0-9]{1,80}$/;
   return passwordRegex.test(password);
 };
 
