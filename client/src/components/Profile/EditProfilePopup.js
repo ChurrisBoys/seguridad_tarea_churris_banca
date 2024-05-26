@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './EditProfilePopup.css';
 
+const validatePhoneNumber = (phoneNumber) => {
+  // Phone number should be exactly 8 digits
+  const phoneRegex = /^\d{8}$/;
+  return phoneRegex.test(phoneNumber);
+};
+
+const validateEmail = (email) => {
+  // Email should consist of letters, periods (letters@letters.letters)
+  const emailRegex = /^[a-zA-Z]+(\.[a-zA-Z]+)*@[a-zA-Z]+(\.[a-zA-Z]+)+$/;
+  return emailRegex.test(email);
+};
+
 const EditProfilePopup = ({ username, onClose }) => {
   const [profile, setProfile] = useState({
     email: '',
@@ -34,6 +46,15 @@ const EditProfilePopup = ({ username, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateEmail(profile.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (!validatePhoneNumber(profile.telnum)) {
+      alert("Please enter a valid telephone number (8 digits).");
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3001/api/profile/${username}`, {
         method: 'PUT',
