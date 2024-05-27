@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../SocialFeed.css';
 import './SearchFriends.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Layout from "../../Common/Layout";
 import config from "../../../config";
 import { authFetch } from '../../Common/Utils';
@@ -10,7 +10,9 @@ export default function SearchFriends() {
     const [friends, setFriends] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const navigate = useNavigate();
     const itemsPerPage = 3; 
+
 
     useEffect(() => {
         searchUsers();
@@ -31,6 +33,10 @@ export default function SearchFriends() {
         try {
             const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
             console.log("Status " + response.status);
+            if (response.status == 403 || response.status == 401) {
+                alert('You must be logged in, error: ' + response.status);
+                navigate("/error");
+            }
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -46,6 +52,10 @@ export default function SearchFriends() {
     const followUser = async (username) => {
         try {
             const response = await authFetch(`${config.BASE_URL}/api/follows/${username}`);
+            if (response.status == 403 || response.status == 401) {
+                alert('You must be logged in, error: ' + response.status);
+                navigate("/error");
+            }
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
