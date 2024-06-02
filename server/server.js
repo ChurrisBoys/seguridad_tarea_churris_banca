@@ -92,8 +92,16 @@ function startServer(db) {
     fetchUserData(db, req, res);
   })
 
-  app.put('/api/profile/:username', (req, res) => {
+  app.put('/api/profile/edit/:username', (req, res) => {
     updateProfile(db, req, res);
+  })
+
+  app.get('/api/myprofile', authenticateToken, (req, res) => {
+    fetchMyPosts(db, req, res);
+  })
+
+  app.put('/api/delete/:postId', authenticateToken, (req, res) => {
+    deletePost(db, req, res);
   })
 
   startListening();
@@ -481,4 +489,70 @@ async function getBalance(db, req, res) {
     res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
   }
 }
+
+function fetchMyPosts(db, req, res) {
+  const currentUser = req.user;
+
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
+
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
+    }
+    const query = `
+        SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
+        FROM Posts p
+        LEFT JOIN Likes l ON l.post_id = p.id
+        WHERE p.username = ? AND is_deleted != 1
+        GROUP BY p.id
+        ORDER BY p.publish_date DESC
+    `;
+
+    db.query(query, [username], (err, results) => {
+      if (err) {
+        console.error('Error fetching posts from user:', err);
+        res.status(500).send('Error fetching posts');
+        return;
+      }
+      res.json(results);
+    });
+  }
+}
+
+function deletePost(db, req, res){
+  const currentUser = req.user
+
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
+
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
+    }
+
+    const postId = req.params.postId;
+    const query = 'UPDATE Posts SET is_deleted = 1 WHERE id = ? AND username = ?';
+    const values = [postId, username];
+    
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error deleting post:', err);
+            res.status(500).send({ error: 'Error deleting post' });
+            return;
+        }
+        if (results.affectedRows === 0) {
+            res.status(404).send({ error: 'Post not found' });
+        } else {
+            res.status(200).send({ message: 'Post deleted successfully' });
+        }
+    });
+  }
+  }
 

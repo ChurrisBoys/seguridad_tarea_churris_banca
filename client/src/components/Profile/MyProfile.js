@@ -1,16 +1,15 @@
-import React , { useState, useEffect }from 'react';
+import React , { useState } from 'react';
 import { useNavigate } from "react-router-dom"
-import ImgAsset from '../Social/public'
 import Layout from "../Common/Layout";
 import './MyProfile.css';
-import DisplayPosts from '../Social/DisplayPosts';
+import DisplayMyPosts from './DisplayMyPosts';
 import EditProfilePopup from './EditProfilePopup';
 
 
 function MyProfile() {
     const navigate = useNavigate();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const username = 'Emilia'; // TODO: Change to actual user
+    const username = 'Alonso'; // TODO: Change to actual user
 
     const handleCreatePost = () => {
         navigate('/createpost');
@@ -42,7 +41,7 @@ function MyProfile() {
 
                 <h2>My Posts</h2>
                 <div className='posts_by_me'>
-        			<DisplayPosts itemsOnPage={3}/>
+        			<DisplayMyPosts itemsOnPage={3}/>
                 </div>
             </div>
             {isPopupOpen && <EditProfilePopup username={username} onClose={closePopup} />}
