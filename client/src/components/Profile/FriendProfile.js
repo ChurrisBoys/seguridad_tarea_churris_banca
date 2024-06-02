@@ -4,19 +4,40 @@ import Layout from "../Common/Layout";
 import './MyProfile.css';
 import config from "../../config";
 import DisplayPosts from '../Social/DisplayPostsUser';
+import { authFetch } from '../Common/Utils';
 
 function FriendProfile() {
-
-    const { username } = useParams();  // Extract the username
+    const { username } = useParams();  
+    const navigate = useNavigate();   
 
     const [userInfo, setUserInfo] = useState(null);
+    const [error, setError] = useState(null);  
 
     useEffect(() => {
-        fetch(`${config.BASE_URL}/api/profile/${username}`)
-            .then(response => response.json())
-            .then(data => setUserInfo(data))
-            .catch(error => console.error('Error fetching user data:', error));
-    }, [username]);
+        authFetch(`${config.BASE_URL}/api/profile/${username}`)
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    alert('You must be logged in, error: ' + response.status);
+                    navigate("/error");
+                    return;  
+                }
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    setUserInfo(data);
+                } else {
+                    navigate("/error");
+                }
+            })
+            .catch(error => {
+                navigate("/error"); 
+            });
+
+    }, [username, navigate]);
 
     return (
         <Layout>
@@ -25,13 +46,17 @@ function FriendProfile() {
                     <div className='user-text'>
                         <h2 className="title">{username}</h2>
                         <h4>Information about {username}</h4>
-                        {userInfo ? (
-                            <div>
-                                <p>Phone number: {userInfo.telnum}</p>
-                                <p>Email: {userInfo.email}</p>
-                            </div>
+                        {error ? (
+                            <p>{error}</p>
                         ) : (
-                            <p>Loading user information...</p>
+                            userInfo ? (
+                                <div>
+                                    <p>Phone number: {userInfo.telnum}</p>
+                                    <p>Email: {userInfo.email}</p>
+                                </div>
+                            ) : (
+                                <p>Loading user information...</p>
+                            )
                         )}
                     </div>
                 </div>

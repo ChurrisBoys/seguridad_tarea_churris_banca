@@ -9,8 +9,10 @@ import SocialFeed from './components/Social/SocialFeed';
 import CreatePost from './components/Profile/CreatePost';
 import SearchFriends from './components/Social/SearchFriends/SearchFriends';
 import MyProfile from './components/Profile/MyProfile';
+import Error from './components/Error/Error';
 import FriendProfile from './components/Profile/FriendProfile';
 import reportWebVitals from './reportWebVitals';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -25,6 +27,7 @@ root.render(
         <Route path="/search" element={<SearchFriends />} />
         <Route path="/friends/:username" element={<FriendProfile />} />
         <Route path="/myprofile" element={<MyProfile />} />
+        <Route path="/error" element={<Error />} />
         <Route path="/createpost" element={<CreatePost />} />
       </Routes>
     </Router>

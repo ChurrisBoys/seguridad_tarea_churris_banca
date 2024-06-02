@@ -1,11 +1,14 @@
 import logo from './logo.png';
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import './App.css';
 import config from './config';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isValidToken, setIsValidToken] = useState(false); // Track token validity
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -20,6 +23,25 @@ function App() {
     };
 
     fetchUser();
+
+    // Check token validity on component mount
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          localStorage.removeItem('token');
+          setIsValidToken(false);
+        } else {
+          setIsValidToken(true);
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        localStorage.removeItem('token');
+        setIsValidToken(false);
+      }
+    }
   }, []);
 
   const handleUsernameChange = (event) => {
@@ -39,7 +61,7 @@ function App() {
       alert('Invalid data');
       return;
     }
-  
+
     if (!passwordRegex.test(password)) {
       alert('Invalid data');
       return;
@@ -81,29 +103,34 @@ function App() {
         {/* {data ? <p>{data.message}</p> : <p>Loading...</p>} */}
         {/* </div>  */}
         <img src={logo} className="App-logo" alt="logo" />
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username:</label>
-            <input
-              className="App-textbox"
-              type="text"
-              id="username"
-              value={username}
-              onChange={handleUsernameChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password:</label>
-            <input
-              className="App-textbox"
-              type="password"
-              id="password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
-          </div>
-          <button className='App-Submit-Button' type="submit" onSubmit={handleSubmit} >Submit</button>
-        </form>
+
+        {isValidToken ? (
+          // Redirect to /social if token is valid
+          <Navigate to="/social" />
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="username">Username:</label>
+              <input
+                className="App-textbox"
+                type="text"
+                id="username"
+                value={username}
+                onChange={handleUsernameChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password:</label>
+              <input
+                className="App-textbox"
+                type="password"
+                id="password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+            </div>
+            <button className='App-Submit-Button' type="submit" onSubmit={handleSubmit} >Submit</button>
+          </form>)}
       </header>
     </div>
   );

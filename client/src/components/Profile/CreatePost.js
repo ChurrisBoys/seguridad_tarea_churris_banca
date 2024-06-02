@@ -43,8 +43,10 @@ function CreatePost() {
         body: formData,
       });
     
-      if (response.status == 403) {
+      if (response.status == 403 || response.status == 401) {
         alert('You must be logged in, error: ' + response.status);
+        navigate("/error");
+        return;
       }
     
       if(response.status == 200)

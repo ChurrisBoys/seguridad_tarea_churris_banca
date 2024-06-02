@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import {useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SocialFeed.css'
 import ImgAsset from './public'
 import config from '../../config';
 
 export default function DisplayPosts(props) {
+	const navigate = useNavigate();
 	const [posts, setPosts] = useState([]);
 	const [actualPage, setPage] = useState(1);
 	const [likeTrigger, setLike] = useState(null);
@@ -17,8 +19,8 @@ export default function DisplayPosts(props) {
     };
 
 	const likeOrDislikePost = async (post_id, post_creator, liked) => {
-		const serverOperationString = `${config.BASE_URL}/api/posts/liked?post_liker=` + 'Emilia' // TODO(us): change to actual user
-			+ '&post_id=' + post_id
+		const serverOperationString = `${config.BASE_URL}/api/posts/liked?`
+			+ 'post_id=' + post_id
 			+ '&post_creator=' + post_creator
 			+ '&liked=' + liked;
 
@@ -28,6 +30,10 @@ export default function DisplayPosts(props) {
 				'authorization': 'Bearer ' + localStorage.getItem('token')
 			},
 		});
+		if (response.status == 403 || response.status == 401) {
+			alert('You must be logged in, error: ' + response.status);
+			navigate("/error");
+		}
 		if (!response.ok) {
 			throw new Error('Error liking or disliking post');
 		}
@@ -44,15 +50,16 @@ export default function DisplayPosts(props) {
 	useEffect(() => {
 		const fetchPosts = async () => {
 			try {
-			const response = await fetch(`${config.BASE_URL}/api/posts?cu=` + 'Emilia',
+			const response = await fetch(`${config.BASE_URL}/api/posts`,
 				{
 					headers: {
 						'authorization': 'Bearer ' + localStorage.getItem('token')
 					}
 				}
 			);
-			if (response.status == 403) {
+			if (response.status == 403 || response.status == 401) {
 				alert('You must be logged in, error: ' + response.status);
+				navigate("/error");
 			}
 			const databasePosts = await response.json();
 			setPosts(databasePosts);
@@ -62,7 +69,7 @@ export default function DisplayPosts(props) {
 		};
 		
 		fetchPosts();
-	  }, [likeTrigger]); // Updating the posts when  liked or disliked
+	}, [likeTrigger]); // Updating the posts when  liked or disliked
 
 		
 	// Applying pagination

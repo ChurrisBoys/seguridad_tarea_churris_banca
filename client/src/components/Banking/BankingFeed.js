@@ -5,30 +5,6 @@ import config from "../../config";
 const pageSize = 8;
 
 const transactions = [
-    {
-        amount: 100,
-        type: "deposit",
-        sourceAccount: "my_account",
-        destinationAccount: "my_account"
-    },
-    {
-        amount: 200,
-        type: "withdraw",
-        sourceAccount: "my_account",
-        destinationAccount: "my_account"
-    },
-    {
-        amount: 300,
-        type: "deposit",
-        sourceAccount: "my_account",
-        destinationAccount: "my_account"
-    },
-    {
-        amount: 400,
-        type: "withdraw",
-        sourceAccount: "my_account",
-        destinationAccount: "my_account"
-    }
 ];
 
 function SliceTransactions(currentPage, pageSize) {
@@ -52,10 +28,10 @@ function NextPageButton({ currentPage, setPage }) {
 function TransactionRow({ transaction }) {
     return (
         <tr>
-            <td>{transaction.amount}</td>
-            <td>{transaction.type}</td>
-            <td>{transaction.sourceAccount}</td>
-            <td>{transaction.destinationAccount}</td>
+            <td>{transaction[0]}</td>
+            <td>{transaction[1]}</td>
+            <td>{transaction[2]}</td>
+            <td>{transaction[3]}</td>
         </tr>
     );
 }
@@ -65,15 +41,15 @@ function TransactionTable({ transactions }) {
         <table className="table">
             <thead>
                 <tr>
+                    <th>Sender</th>
+                    <th>Receiver</th>
                     <th>Amount</th>
-                    <th>Type</th>
-                    <th>Transferring account</th>
-                    <th>Target account</th>
+                    <th>Currency used</th>
                 </tr>
             </thead>
             <tbody>
                 {transactions.map((transaction, index) => (
-                    <TransactionRow key={index} transaction={transaction} />
+                    <TransactionRow key={index} transaction={transactions[index]} />
                 ))}
             </tbody>
         </table>
@@ -82,6 +58,29 @@ function TransactionTable({ transactions }) {
 
 function BankingFeed({ transactions, currentPage, setPage }) {
     const [currencyInfo, setCurrencyInfo] = useState({ currency: '', balance: 0 });
+	const [transactionss, setTransactions] = useState([]);
+
+	useEffect(() => {
+		const fetchTransactions = async () => {
+			try {
+			const response = await fetch(`${config.BASE_URL}/getUserTransactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+            if (response.status == 403) {
+				alert('You must be logged in, error: ' + response.status);
+			}
+			const databaseTransactions = await response.json();
+            setTransactions(databaseTransactions);
+			} catch (error) {
+				console.error('Failed to fetch transactions', error);
+			}
+		};
+		fetchTransactions();
+	}, []);
 
     
     useEffect(() => {
@@ -113,7 +112,7 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                             <p>Currency: {currencyInfo.currency}</p>
                             <p>Total Amount: {currencyInfo.balance}</p>
                         </div>
-                        <TransactionTable transactions={transactions} />
+                        <TransactionTable transactions={transactionss} />
                         <NextPageButton currentPage={currentPage} setPage={setPage} />
                     </div>
                     <div className="col">

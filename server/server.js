@@ -82,13 +82,16 @@ function startServer(db) {
   app.post('/getBalance', authenticateToken, async (req, res) => {
     getBalance(db, req, res);
   })
-
+  
+  app.post('/getUserTransactions', authenticateToken, async (req, res) => {
+    fetchUserTransactions(db, req, res);
+  })
   
   app.get('/api/data', (req, res) => {
     res.json({ message: 'Hello from the Node.js backend!' });
   })
 
-  app.get('/api/profile/:username', (req, res) => {
+  app.get('/api/profile/:username', authenticateToken, (req, res) => {
     fetchUserData(db, req, res);
   })
 
@@ -426,27 +429,35 @@ function updateProfile(db, req, res) {
 
 function fetchUserData(db, req, res) {
   const username = req.params.username;
+  const actualUser = req.user.username;
 
   if(!validators.validateUsername(username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
 
-  const query = 'SELECT email, telnum FROM Users WHERE username = ?';
-  const values = [username];
+  const query = `
+    SELECT u.email, u.telnum 
+    FROM Users u
+    JOIN Follows f1 ON f1.user1 = ? AND f1.user2 = u.username
+    JOIN Follows f2 ON f2.user1 = u.username AND f2.user2 = ?
+    WHERE u.username = ?;
+  `;
+  const values = [actualUser, actualUser, username];
 
   db.query(query, values, (err, results) => {
     if (err) {
       res.status(500).send({ error: 'Error fetching user data' });
       console.log(err);
-      return
+      return;
     }
     if (results.length > 0) {
       res.status(200).json(results[0]);
     } else {
       res.status(404).send({ error: 'User not found' });
     }
-  })
+  });
 }
+
 
 async function getBalance(db, req, res) {
   if(!validators.validateUsername(req.user.username)) {
@@ -556,3 +567,23 @@ function deletePost(db, req, res){
   }
   }
 
+async function fetchUserTransactions(db, req, res) {
+  if(!validators.validateUsername(req.user.username)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+  
+  try {
+    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json\n\n',
+      },
+      body: `username=${req.user.username}`, // Ensure encoding for safety
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
+  }
+}
