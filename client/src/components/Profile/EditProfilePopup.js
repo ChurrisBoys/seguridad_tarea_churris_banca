@@ -56,7 +56,7 @@ const EditProfilePopup = ({ username, onClose }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/profile/${username}`, {
+      const response = await fetch(`http://localhost:3001/api/profile/edit/${username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
