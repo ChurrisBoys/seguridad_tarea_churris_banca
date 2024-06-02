@@ -25,9 +25,6 @@ root.render(
         <Route path="/search" element={<SearchFriends />} />
         <Route path="/friends/:username" element={<FriendProfile />} />
         <Route path="/myprofile" element={<MyProfile />} />
-      </Routes>
-      <Routes>
-        <Route path="/" element={<App />} />
         <Route path="/createpost" element={<CreatePost />} />
       </Routes>
     </Router>
