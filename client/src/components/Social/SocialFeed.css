@@ -14,6 +14,11 @@
 	justify-content: center;
 	margin-top:10px;
 }
+
+.NextText {
+	color: rgb(255,255,255,1.00);
+}
+
 .SocialFeedPage .NextText {
 	color: rgb(255,255,255,1.00);
 }
@@ -86,4 +91,20 @@
 	font-size: 35.699999999999996px;
 	font-weight: 400;
 	line-height: 43.20511116027832px;
+}
+
+.DeleteButton {
+    padding: 6px 10px;
+	margin-bottom: 10px;
+    font-size: 14px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.DeleteButton:hover {
+    background-color: darkred;
 }
