@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
 require('dotenv').config({ path: './secrets.env'});
+const axios = require('axios');
 
 // Packages for image processing
 const bodyParser = require('body-parser');
@@ -79,7 +80,7 @@ function startServer(db) {
     searchUsers(db, req, res);
   })
   
-  app.post('/getBalance', authenticateToken, async (req, res) => {
+  app.get('/getBalance', authenticateToken, async (req, res) => {
     getBalance(db, req, res);
   })
   
@@ -460,29 +461,30 @@ function fetchUserData(db, req, res) {
 
 
 async function getBalance(db, req, res) {
+
   if(!validators.validateUsername(req.user.username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
 
   try {
-    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json\n\n',
-      },
-      body: `username=${req.user.username}`, // Ensure encoding for safety
-    });
+    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', 
+      `username=${req.user.username}`, 
+      {
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+      }
+    );
+    // console.log("response");
+    // console.log(typeof response.data);
 
-    console.log("response");
-    console.log(response);
-
-    const data = await response.json();
-    console.log("Received Data:", data);
+    const data = JSON.stringify(response.data);
+    console.log("Received Balance Data :", data);
 
     // Sanitizing received data from cgi
-    const usernameMatch = data.Username.match(/[a-zA-Z]+/);
-    const balanceMatch = data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
-    const currencyMatch = data.Currency.match(/[a-zA-Z]+/);
+    const usernameMatch = response.data.Username.match(/[a-zA-Z]+/);
+    const balanceMatch = response.data.Balance.toString().match(/[0-9]+(\.[0-9]+)?/);
+    const currencyMatch = response.data.Currency.match(/[a-zA-Z]+/);
     if (usernameMatch && balanceMatch && currencyMatch) {
       const balanceData = {
         username: usernameMatch[0],
@@ -573,16 +575,17 @@ async function fetchUserTransactions(db, req, res) {
   }
   
   try {
-    const response = await fetch('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json\n\n',
-      },
-      body: `username=${req.user.username}`, // Ensure encoding for safety
-    });
+    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S', 
+    `username=${req.user.username}`, 
+      {
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+      }
+    );
 
-    const data = await response.json();
-    res.json(data);
+    // const data = await response.json();
+    res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
   }

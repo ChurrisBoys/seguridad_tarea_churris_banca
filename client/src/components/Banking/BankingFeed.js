@@ -1,6 +1,7 @@
 import Layout from "../Common/Layout";
 import React, { useState, useEffect } from 'react';
 import config from "../../config";
+import {authFetch} from '../Common/Utils'
 
 const pageSize = 8;
 
@@ -58,12 +59,12 @@ function TransactionTable({ transactions }) {
 
 function BankingFeed({ transactions, currentPage, setPage }) {
     const [currencyInfo, setCurrencyInfo] = useState({ currency: '', balance: 0 });
-	const [transactionss, setTransactions] = useState([]);
+	const [transactionss, setTransactions] = useState([0,0,0,0]);
 
 	useEffect(() => {
 		const fetchTransactions = async () => {
 			try {
-			const response = await fetch(`${config.BASE_URL}/getUserTransactions`, {
+                const response = await fetch(`${config.BASE_URL}/getUserTransactions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,10 +72,10 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                 }
             });
             if (response.status == 403) {
-				alert('You must be logged in, error: ' + response.status);
-			}
-			const databaseTransactions = await response.json();
-            setTransactions(databaseTransactions);
+                    alert('You must be logged in, error: ' + response.status);
+                }
+                const databaseTransactions = await response.json();
+                setTransactions(databaseTransactions);
 			} catch (error) {
 				console.error('Failed to fetch transactions', error);
 			}
@@ -86,10 +87,9 @@ function BankingFeed({ transactions, currentPage, setPage }) {
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const response = await fetch(`${config.BASE_URL}/getBalance`, {
+                const response = await authFetch(`${config.BASE_URL}/getBalance`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'authorization': 'Bearer ' + localStorage.getItem('token')
                     },
                 });
