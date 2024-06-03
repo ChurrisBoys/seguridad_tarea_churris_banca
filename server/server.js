@@ -104,6 +104,10 @@ function startServer(db) {
     fetchMyPosts(db, req, res);
   })
 
+  app.get('/api/myprofile/data', authenticateToken, (req, res) => {
+    fetchMyProfileData(db, req, res);
+  })
+
   app.put('/api/delete/:postId', authenticateToken, (req, res) => {
     deletePost(db, req, res);
   })
@@ -532,6 +536,41 @@ function fetchMyPosts(db, req, res) {
         return;
       }
       res.json(results);
+    });
+  }
+}
+
+function fetchMyProfileData(db, req, res) {
+  const currentUser = req.user
+
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
+
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
+    }
+
+    const query = `
+      SELECT u.username, u.email, u.telnum 
+      FROM Users u
+      WHERE u.username = ?
+    `;
+
+    db.query(query, [username], (err, results) => {
+      if (err) {
+        res.status(500).send({ error: 'Error fetching user data' });
+        console.log(err);
+        return;
+      }
+      if (results.length > 0) {
+        res.status(200).json(results[0]);
+      } else {
+        res.status(404).send({ error: 'User not found' });
+      }
     });
   }
 }
