@@ -195,7 +195,7 @@ function fetchPosts(db, req, res) {
     FROM Posts p
     LEFT JOIN Likes l ON
     l.post_id = p.id
-    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?)
+    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?) AND p.is_deleted != 1
     GROUP BY p.id`;
   
   db.query(postFromFollowingQuery, [req.user.username], (err, results) => {
@@ -288,7 +288,7 @@ function fetchPostsFromUser(db, req, res) {
       SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
       FROM Posts p
       LEFT JOIN Likes l ON l.post_id = p.id
-      WHERE p.username = ?
+      WHERE p.username = ? AND p.is_deleted != 1
       GROUP BY p.id
       ORDER BY p.publish_date DESC
   `;
@@ -524,7 +524,7 @@ function fetchMyPosts(db, req, res) {
         SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
         FROM Posts p
         LEFT JOIN Likes l ON l.post_id = p.id
-        WHERE p.username = ? AND is_deleted != 1
+        WHERE p.username = ? AND p.is_deleted != 1
         GROUP BY p.id
         ORDER BY p.publish_date DESC
     `;
