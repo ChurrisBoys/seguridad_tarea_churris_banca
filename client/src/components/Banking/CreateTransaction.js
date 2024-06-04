@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Layout from "../Common/Layout";
+import config from './config'; // Make sure you have a config file for your BASE_URL
 
 // Input Components (with validation)
 const AmountInput = () => {
@@ -102,81 +103,74 @@ function str2ab(str) {
     return buf;
 }
 
-function handleKeyUpload(privateKey) {
-    let keyData = '';
-
+async function handleKeyUpload(privateKey) {
     if (!privateKey) {
         alert('Please upload a private key file');
-        return;
+        return null;
     }
 
-    // Read the file, discartting the header and footer
-    const reader = new FileReader();
-    reader.onload() = async (event) => {
-        const key = event.target.result;
-        keyData = key.split('\n').slice(1, -1).join('');
-    }
-    reader.readAsText(privateKey);
-
-    return keyData;
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const key = event.target.result;
+            const keyData = key.split('\n').slice(1, -1).join('');
+            resolve(keyData);
+        };
+        reader.readAsText(privateKey);
+    });
 }
 
-function importKey(keyData) {
-    let importedKey = null;
-
+async function importKey(keyData) {
     if (!keyData) {
         alert('Error importing key');
-        return;
+        return null;
     }
 
     keyData = atob(keyData);
-
-    // Prepare the keydata
     const keyDataArray = str2ab(keyData);
 
-    // Import the key
-    crypto.subtle.importKey(
-        'pkcs8',
-        keyDataArray,
-        {
-            name: 'RSA-OAEP',
-            hash: 'SHA-384'
-        },
-        false,
-        ['sign']
-    ).then((key) => {
-        importedKey = key;
-    }).catch((error) => {
+    try {
+        const importedKey = await crypto.subtle.importKey(
+            'pkcs8',
+            keyDataArray,
+            {
+                name: 'RSA-OAEP',
+                hash: 'SHA-384'
+            },
+            false,
+            ['sign']
+        );
+        return importedKey;
+    } catch (error) {
         console.error('Error importing key:', error);
-    });
-
-    return importedKey;
+        alert('Error importing key. Please check the file and try again.');
+        return null;
+    }
 }
 
 function prepareDataForSigning(transactionData) {
-    const dataBuffer = new TextEncoder().encode(transactionData);
-
+    const dataBuffer = new TextEncoder().encode(JSON.stringify(transactionData));
     return dataBuffer;
 }
 
-function signData(importedKey, dataToSend) {
-    let signedData = null;
-
+async function signData(importedKey, dataToSend) {
     if (!importedKey) {
         alert('Error signing data');
-        return;
+        return null;
     }
 
-    // Sign the data
-    crypto.subtle.sign("RSASSA-PKCS1-v1_5", importedKey, dataToSend)
-        .then((signature) => {
-            signedData = signature;
-        })
-        .catch((error) => {
-            console.error('Error signing data:', error);
-        });
-
-    return signedData;
+    try {
+        const signatureBuffer = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", importedKey, dataToSend);
+        // Convert signature to hexadecimal string
+        const signatureHex = Array.from(new Uint8Array(signatureBuffer))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+        return signatureHex; 
+    } catch (error) {
+        console.error('Error signing data:', error);
+        alert('Error signing data.');
+        return null;
+    }
 }
 
 // Main CreateTransaction Component
@@ -200,8 +194,9 @@ const CreateTransaction = () => {
             return;
         }
 
-        let keyData = handleKeyUpload(privateKey);
-        let importedKey = importKey(keyData);
+        // Handle key upload and import (async/await)
+        const keyData = await handleKeyUpload(privateKey);
+        const importedKey = await importKey(keyData);
 
         // Form data is now validated and ready to be sent to the server
         const transactionData = {
@@ -209,34 +204,33 @@ const CreateTransaction = () => {
             recipient,
         };
 
-        let dataToSend = prepareDataForSigning(transactionData);
+        // Prepare data and sign - async/await 
+        const dataToSend = prepareDataForSigning(transactionData);
+        const signature = await signData(importedKey, dataToSend);
 
-        // Sign the data
-        let signature = signData(importedKey, dataToSend);
-
-        // Send the signed data to the server
-        const response = await fetch(`${config.BASE_URL}/createTransaction`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({
-                transactionData,
-                signature
-            })
-        });
-
-        if (response.status == 403) {
-            alert('You must be logged in, error: ' + response.status);
+        if (!signature) {
+            return; // Exit if signing failed
         }
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        try {
+            // Send the signed data to the server
+            const token = localStorage.getItem('token'); // Get JWT token 
+            const response = await fetch(`${config.BASE_URL}/createTransaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token // Include JWT in header
+                },
+                body: JSON.stringify({
+                    transactionData,
+                    signature
+                })
+            });
+
+        } catch (error) {
+            console.error('Error sending transaction:', error);
+            alert('Error sending transaction. Please try again later.');
         }
-
-        alert('Transaction created successfully');
-
     };
 
     return (
@@ -252,4 +246,4 @@ const CreateTransaction = () => {
     );
 };
 
-export default CreateTransaction; // No need for a separate component function
+export default CreateTransaction;
