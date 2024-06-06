@@ -96,7 +96,7 @@ function startServer(db) {
     fetchUserData(db, req, res);
   })
 
-  app.put('/api/profile/edit/:username', (req, res) => {
+  app.put('/api/myprofile/edit', authenticateToken, (req, res) => {
     updateProfile(db, req, res);
   })
 
@@ -409,27 +409,35 @@ function followOrUnfollowUser(db, req, res) {
 }
 
 function updateProfile(db, req, res) {
-  const username = req.params.username;
-  const { email, telnum } = req.body;
+  const currentUser = req.user;
 
-  if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
-    return res.status(500).json({ error: 'Invalid data' });
-  }
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
 
-  if(!validators.validateUsername(username)) {
-    return res.status(403).json({ error: 'Invalid data' });
-  }
-
-  const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
-  const values = [email, telnum, username];
-  db.query(query, values, (err, results) => {
-    if (err) {
-      res.status(500).send({ error: 'Error updating profile' });
-      console.log(err);
-      return
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
     }
-    res.status(200).send({ message: 'Profile updated successfully' });
-  });
+    const { email, telnum } = req.body;
+
+    if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
+      return res.status(500).json({ error: 'Invalid data' });
+    }
+    
+    const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
+    const values = [email, telnum, username];
+    db.query(query, values, (err, results) => {
+      if (err) {
+        res.status(500).send({ error: 'Error updating profile' });
+        console.log(err);
+        return
+      }
+      res.status(200).send({ message: 'Profile updated successfully' });
+    });
+  }
 }
 
 function fetchUserData(db, req, res) {
