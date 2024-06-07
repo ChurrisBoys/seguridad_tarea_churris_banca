@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql');
 require('dotenv').config({ path: './secrets.env'});
 const axios = require('axios');
+const https = require('https');
 
 // Packages for image processing
 const bodyParser = require('body-parser');
@@ -23,10 +24,20 @@ const authenticateToken = require('./libraries/Session/authMiddleware');
 const UserService = require('./apps/user/userService');
 
 const app = express();
-const port = 3001;
+const port = 3003;
+const httpsPort = 3001; // Used this port because of iptables
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
+
+// Setting up https for express js
+const options = {
+  key: fs.readFileSync('../../equipo1_churris_server.key'),
+  cert: fs.readFileSync('../../equipo1_churris_server.crt') // TODO: Add more security to the access of the private key cert from javascript based attacks or related
+};
+https.createServer(options, app).listen(httpsPort, function(){
+  console.log("Express server listening on port " + httpsPort);
+});
 
 // Setting up the database connection
 const db = mysql.createConnection({
