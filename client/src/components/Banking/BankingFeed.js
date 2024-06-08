@@ -2,6 +2,7 @@ import Layout from "../Common/Layout";
 import React, { useState, useEffect } from 'react';
 import config from "../../config";
 import {authFetch} from '../Common/Utils'
+import { Link } from 'react-router-dom';
 
 const pageSize = 8;
 
@@ -14,9 +15,12 @@ function SliceTransactions(currentPage, pageSize) {
     return transactions.slice(startIndex, endIndex);
 }
 
+
 const CreateTransactionButton = () => {
     return (
-        <button className="btn btn-dark btn-primary">Create transaction</button>
+        <Link to="/banking/createtransaction"> 
+            <button className="btn btn-dark btn-primary">Create transaction</button>
+        </Link>
     );
 }
 

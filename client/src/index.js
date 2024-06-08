@@ -5,6 +5,7 @@ import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 import BankingFeed from './components/Banking/BankingFeed';
+import CreateTransaction from './components/Banking/CreateTransaction';
 import SocialFeed from './components/Social/SocialFeed';
 import CreatePost from './components/Profile/CreatePost';
 import SearchFriends from './components/Social/SearchFriends/SearchFriends';
@@ -29,6 +30,7 @@ root.render(
         <Route path="/myprofile" element={<MyProfile />} />
         <Route path="/error" element={<Error />} />
         <Route path="/createpost" element={<CreatePost />} />
+        <Route path='/banking/createtransaction' element={<CreateTransaction />} />
       </Routes>
     </Router>
   </React.StrictMode>

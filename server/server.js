@@ -107,12 +107,16 @@ function startServer(db) {
     fetchUserData(db, req, res);
   })
 
-  app.put('/api/profile/edit/:username', (req, res) => {
+  app.put('/api/myprofile/edit', authenticateToken, (req, res) => {
     updateProfile(db, req, res);
   })
 
   app.get('/api/myprofile', authenticateToken, (req, res) => {
     fetchMyPosts(db, req, res);
+  })
+
+  app.get('/api/myprofile/data', authenticateToken, (req, res) => {
+    fetchMyProfileData(db, req, res);
   })
 
   app.put('/api/delete/:postId', authenticateToken, (req, res) => {
@@ -202,7 +206,7 @@ function fetchPosts(db, req, res) {
     FROM Posts p
     LEFT JOIN Likes l ON
     l.post_id = p.id
-    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?)
+    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?) AND p.is_deleted != 1
     GROUP BY p.id`;
   
   db.query(postFromFollowingQuery, [req.user.username], (err, results) => {
@@ -295,7 +299,7 @@ function fetchPostsFromUser(db, req, res) {
       SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
       FROM Posts p
       LEFT JOIN Likes l ON l.post_id = p.id
-      WHERE p.username = ?
+      WHERE p.username = ? AND p.is_deleted != 1
       GROUP BY p.id
       ORDER BY p.publish_date DESC
   `;
@@ -416,27 +420,35 @@ function followOrUnfollowUser(db, req, res) {
 }
 
 function updateProfile(db, req, res) {
-  const username = req.params.username;
-  const { email, telnum } = req.body;
+  const currentUser = req.user;
 
-  if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
-    return res.status(500).json({ error: 'Invalid data' });
-  }
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
 
-  if(!validators.validateUsername(username)) {
-    return res.status(403).json({ error: 'Invalid data' });
-  }
-
-  const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
-  const values = [email, telnum, username];
-  db.query(query, values, (err, results) => {
-    if (err) {
-      res.status(500).send({ error: 'Error updating profile' });
-      console.log(err);
-      return
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
     }
-    res.status(200).send({ message: 'Profile updated successfully' });
-  });
+    const { email, telnum } = req.body;
+
+    if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
+      return res.status(500).json({ error: 'Invalid data' });
+    }
+    
+    const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
+    const values = [email, telnum, username];
+    db.query(query, values, (err, results) => {
+      if (err) {
+        res.status(500).send({ error: 'Error updating profile' });
+        console.log(err);
+        return
+      }
+      res.status(200).send({ message: 'Profile updated successfully' });
+    });
+  }
 }
 
 function fetchUserData(db, req, res) {
@@ -531,7 +543,7 @@ function fetchMyPosts(db, req, res) {
         SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
         FROM Posts p
         LEFT JOIN Likes l ON l.post_id = p.id
-        WHERE p.username = ? AND is_deleted != 1
+        WHERE p.username = ? AND p.is_deleted != 1
         GROUP BY p.id
         ORDER BY p.publish_date DESC
     `;
@@ -543,6 +555,41 @@ function fetchMyPosts(db, req, res) {
         return;
       }
       res.json(results);
+    });
+  }
+}
+
+function fetchMyProfileData(db, req, res) {
+  const currentUser = req.user
+
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
+
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
+    }
+
+    const query = `
+      SELECT u.username, u.email, u.telnum 
+      FROM Users u
+      WHERE u.username = ?
+    `;
+
+    db.query(query, [username], (err, results) => {
+      if (err) {
+        res.status(500).send({ error: 'Error fetching user data' });
+        console.log(err);
+        return;
+      }
+      if (results.length > 0) {
+        res.status(200).json(results[0]);
+      } else {
+        res.status(404).send({ error: 'User not found' });
+      }
     });
   }
 }
