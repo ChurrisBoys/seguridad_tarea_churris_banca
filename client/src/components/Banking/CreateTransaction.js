@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from "../Common/Layout";
-import config from './config'; // Make sure you have a config file for your BASE_URL
+import config from '../../config'; // Make sure you have a config file for your BASE_URL
 
 // Input Components (with validation)
 const AmountInput = () => {
