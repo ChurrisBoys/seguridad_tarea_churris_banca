@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from "../Common/Layout";
-import config from './config'; // Make sure you have a config file for your BASE_URL
+import config from '../../config'; // Make sure you have a config file for your BASE_URL
 
 // Input Components (with validation)
 const AmountInput = () => {
@@ -113,7 +113,7 @@ async function handleKeyUpload(privateKey) {
         const reader = new FileReader();
         reader.onload = (event) => {
             const key = event.target.result;
-            const keyData = key.split('\n').slice(1, -1).join('');
+            const keyData = key.replace('-----BEGIN PRIVATE KEY-----', '').replace('-----END PRIVATE KEY-----', '').replace(/\n/g, '');
             resolve(keyData);
         };
         reader.readAsText(privateKey);
@@ -134,10 +134,10 @@ async function importKey(keyData) {
             'pkcs8',
             keyDataArray,
             {
-                name: 'RSA-OAEP',
+                name: 'RSASSA-PKCS1-v1_5',
                 hash: 'SHA-384'
             },
-            false,
+            true,
             ['sign']
         );
         return importedKey;
