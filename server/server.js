@@ -63,10 +63,6 @@ function startServer(db) {
 
   prepareDependencies();
 
-  app.get('/api/users', (req, res) => {
-    fetchUsers(db, res);
-  })
-
   app.post('/api/createpost', authenticateToken, upload.single('user_image'), (req, res) => {
     createPosts(db, req, res);
   })
@@ -79,7 +75,7 @@ function startServer(db) {
     likeOrDislikePost(db, req, res);
   })
 
-  app.get('/api/posts/:username', (req, res) => {
+  app.get('/api/posts/:username', authenticateToken, (req, res) => {
     fetchPostsFromUser(db, req, res);
   })
 
@@ -99,10 +95,6 @@ function startServer(db) {
     fetchUserTransactions(db, req, res);
   })
   
-  app.get('/api/data', (req, res) => {
-    res.json({ message: 'Hello from the Node.js backend!' });
-  })
-
   app.get('/api/profile/:username', authenticateToken, (req, res) => {
     fetchUserData(db, req, res);
   })
@@ -140,17 +132,6 @@ function startListening() {
 }
 
 startServer(db);
-
-
-function fetchUsers(db, res) {
-  db.query('SELECT * FROM Users', (err, results) => {
-    if (err) {
-      res.status(500).send('Error fetching users');
-      return;
-    }
-    res.json(results);
-  });
-}
 
 function createPosts(db, req, res) {
   const binaryImageData = null;

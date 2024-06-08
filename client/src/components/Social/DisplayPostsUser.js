@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './SocialFeed.css';
 import ImgAsset from './public';
 import config from '../../config';
+import { authFetch } from '../Common/Utils';
 
 export default function DisplayPostsUser({ user, itemsOnPage }) {
     const [userPosts, setUserPosts] = useState([]);
@@ -22,7 +23,7 @@ export default function DisplayPostsUser({ user, itemsOnPage }) {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${config.BASE_URL}/api/posts/${user}`);
+                const response = await authFetch(`${config.BASE_URL}/api/posts/${user}`);
                 const databasePosts = await response.json();
                 setUserPosts(databasePosts);
                 setNumberOfPages(Math.ceil(databasePosts.length / itemsOnPage));
