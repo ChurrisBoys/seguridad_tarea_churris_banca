@@ -13,7 +13,6 @@ function MyProfile() {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
     const [error, setError] = useState(null);  
-    const username = 'Alonso'; // TODO: Change to actual user
 
     useEffect(() => {
         authFetch(`${config.BASE_URL}/api/myprofile/data`)
@@ -53,6 +52,14 @@ function MyProfile() {
         setIsPopupOpen(false);
     };
 
+    const updateUserInfo = (updatedProfile) => {
+        setUserInfo(updatedProfile);
+    }
+
+    const displayError = () => {
+        navigate('/error');
+    };
+
     return (
         <Layout>
             <div className="MyProfile"> 
@@ -86,7 +93,7 @@ function MyProfile() {
         			<DisplayMyPosts itemsOnPage={3}/>
                 </div>
             </div>
-            {isPopupOpen && <EditProfilePopup username={username} onClose={closePopup} />}
+            {isPopupOpen && <EditProfilePopup onClose={closePopup} onUpdate={updateUserInfo} onError={displayError} />}
         </Layout>
     );
 }

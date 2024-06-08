@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './EditProfilePopup.css';
+import config from '../../config';
+import { authFetch } from '../Common/Utils';
 
 const validatePhoneNumber = (phoneNumber) => {
   // Phone number should be exactly 8 digits
@@ -13,16 +15,16 @@ const validateEmail = (email) => {
   return emailRegex.test(email);
 };
 
-const EditProfilePopup = ({ username, onClose }) => {
+const EditProfilePopup = ({ onClose, onUpdate, onError }) => {
   const [profile, setProfile] = useState({
     email: '',
     telnum: ''
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/profile/${username}`);
+        const response = await authFetch(`${config.BASE_URL}/api/myprofile/data`);
         if (!response.ok) {
           throw new Error('Error fetching profile data');
         }
@@ -33,8 +35,8 @@ const EditProfilePopup = ({ username, onClose }) => {
       }
     };
 
-    fetchProfile();
-  }, [username]);
+    fetchProfileData();
+  },[]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,19 +58,27 @@ const EditProfilePopup = ({ username, onClose }) => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/profile/edit/${username}`, {
+      const response = await fetch(`${config.BASE_URL}/api/myprofile/edit`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(profile)
       });
+
+      if (response.status === 401 || response.status === 403) {
+        alert('You must be logged in, error: ' + response.status);
+        onError();
+        onClose();  
+      }
 
       if (!response.ok) {
         throw new Error('Error updating profile');
       }
 
       alert('Profile updated successfully');
+      onUpdate(profile);
       onClose();
     } catch (error) {
       console.error('Error updating profile', error);

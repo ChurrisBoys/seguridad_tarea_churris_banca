@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql');
 require('dotenv').config({ path: './secrets.env'});
 const axios = require('axios');
+const https = require('https');
 
 // Packages for image processing
 const bodyParser = require('body-parser');
@@ -23,10 +24,20 @@ const authenticateToken = require('./libraries/Session/authMiddleware');
 const UserService = require('./apps/user/userService');
 
 const app = express();
-const port = 3001;
+const port = 3003;
+const httpsPort = 3001; // Used this port because of iptables
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const upload = multer({ dest: 'userPostImages/' }); // Destination folder to store the images received
+
+// Setting up https for express js
+const options = {
+  key: fs.readFileSync('../../equipo1_churris_server.key'),
+  cert: fs.readFileSync('../../equipo1_churris_server.crt') // TODO: Add more security to the access of the private key cert from javascript based attacks or related
+};
+https.createServer(options, app).listen(httpsPort, function(){
+  console.log("Express server listening on port " + httpsPort);
+});
 
 // Setting up the database connection
 const db = mysql.createConnection({
@@ -96,7 +107,7 @@ function startServer(db) {
     fetchUserData(db, req, res);
   })
 
-  app.put('/api/profile/edit/:username', (req, res) => {
+  app.put('/api/myprofile/edit', authenticateToken, (req, res) => {
     updateProfile(db, req, res);
   })
 
@@ -409,27 +420,35 @@ function followOrUnfollowUser(db, req, res) {
 }
 
 function updateProfile(db, req, res) {
-  const username = req.params.username;
-  const { email, telnum } = req.body;
+  const currentUser = req.user;
 
-  if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
-    return res.status(500).json({ error: 'Invalid data' });
-  }
+  // Verify if user is logged in
+  if (!currentUser) {
+    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+  } else {
+    // Obtain the username
+    const username = req.user.username;
 
-  if(!validators.validateUsername(username)) {
-    return res.status(403).json({ error: 'Invalid data' });
-  }
-
-  const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
-  const values = [email, telnum, username];
-  db.query(query, values, (err, results) => {
-    if (err) {
-      res.status(500).send({ error: 'Error updating profile' });
-      console.log(err);
-      return
+    if (!validators.validateUsername(username)) { 
+      return res.status(403).json({ error: 'Invalid data' });
     }
-    res.status(200).send({ message: 'Profile updated successfully' });
-  });
+    const { email, telnum } = req.body;
+
+    if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
+      return res.status(500).json({ error: 'Invalid data' });
+    }
+    
+    const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
+    const values = [email, telnum, username];
+    db.query(query, values, (err, results) => {
+      if (err) {
+        res.status(500).send({ error: 'Error updating profile' });
+        console.log(err);
+        return
+      }
+      res.status(200).send({ message: 'Profile updated successfully' });
+    });
+  }
 }
 
 function fetchUserData(db, req, res) {
