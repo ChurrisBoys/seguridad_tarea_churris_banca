@@ -293,41 +293,29 @@ function likeOrDislikePost(db, req, res) {
 
 
 function fetchPostsFromUser(db, req, res) {
-  const username = req.params.username;
-
-  if (!validators.validateUsername(username)) { 
+  if (!validators.validateUsername(req.query.cu)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
-  const query = `
-      SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
-      FROM Posts p
-      LEFT JOIN Likes l ON l.post_id = p.id
-      WHERE p.username = ? AND p.is_deleted != 1
-      GROUP BY p.id
-      ORDER BY p.publish_date DESC
-  `;
-  const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
-  db.query(checkExistingFollowQuery, [req.user.username, username], (err, existingFollow) => {
+  
+  const wantedUser = req.params.username;
+  if (!validators.validateUsername(wantedUser)) {
+    return res.status(403).json({ error: 'Invalid data' });
+  }
+
+  const postFromFollowingQuery = `
+    SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
+    FROM Posts p
+    LEFT JOIN Likes l ON l.post_id = p.id
+    WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?)
+    AND p.username = ? AND p.is_deleted != 1
+    GROUP BY p.id`;
+
+  db.query(postFromFollowingQuery, [req.user.username, wantedUser], (err, results) => {
     if (err) {
-      console.error('Error checking existing follow:', err);
-      res.status(500).send('Database error.');
+      res.status(500).send('Error fetching posts');
       return;
     }
-    
-    // If there is a follow relationship, then send back the posts
-    if (existingFollow.length > 0) {
-      db.query(query, [username], (err, results) => {
-        if (err) {
-          console.error('Error fetching posts from user:', err);
-          res.status(500).send('Error fetching posts');
-          return;
-        }
-        res.json(results);
-      });
-    }
-    // If not then send unauthorized access to data
-    else
-      return res.status(403).json({ error: 'Invalid data' });
+    res.json(results);
   });
 
 }
