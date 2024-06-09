@@ -1,0 +1,4 @@
+2024-06-09T21:40:27.310Z [info]: Follow: user ${req.user.username} clicked follow on ${req.params.username}
+2024-06-09T21:40:30.859Z [info]: Follow: user ${req.user.username} clicked follow on ${req.params.username}
+2024-06-09T21:41:52.746Z [info]: Follow: user carlos.sanchezblanco clicked follow on carlos.ramirezmasis
+2024-06-09T21:42:01.617Z [info]: Follow: user carlos.sanchezblanco clicked follow on esteban.leonrodriguez

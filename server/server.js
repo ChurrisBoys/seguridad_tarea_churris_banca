@@ -12,7 +12,7 @@ const fs = require('fs');
 
 // Packages for validating data
 const validators = require('./libraries/Validators/validators');
-
+const logger = require('./libraries/Log/logger');
 
 // Routers for the different functionalities
 const createAuthRouter = require('./apps/auth/authEntry');
@@ -412,6 +412,7 @@ function followOrUnfollowUser(db, req, res) {
             res.status(500).send('Database error.');
             return;
           }
+          logger.info(`Follow: user ${req.user.username} clicked follow on ${req.params.username}`);
           res.status(200).send('Successfully followed user.');
         });
       }
