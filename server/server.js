@@ -22,6 +22,7 @@ const authenticateToken = require('./libraries/Session/authMiddleware');
 
 //Services
 const UserService = require('./apps/user/userService');
+const { callbackify } = require('util');
 
 const app = express();
 const port = 3003;
@@ -209,64 +210,79 @@ function likeOrDislikePost(db, req, res) {
     return res.status(403).json({ error: 'Invalid data' });
   }
 
-
-  // Query to know if there was already a like or dislike to this post from the post_liker
-  const likesQuery = `SELECT * FROM Likes l
-  WHERE l.username = ?
-  AND l.post_id = ?
-  AND l.post_creator = ?`;
-  db.query(likesQuery, [post_liker, post_id, post_creator], (err, results) => {
+  // Check if there is a follow relationship to perform the operation
+  const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
+  db.query(checkExistingFollowQuery, [post_liker, post_creator], (err, existingFollow) => {
     if (err) {
-      res.status(500).send('Error fetching likes');
+      console.error('Error checking existing follow:', err);
+      res.status(500).send('Database error.');
       return;
     }
-
-    // If the user already liked or disliked the post and clicked the same button, then remove its reaction
-    if (results.length > 0 && results[0].liked === parseInt(liked)) {
-      const deleteQuery = `DELETE FROM Likes
-      WHERE username = ?
-      AND post_id = ?
-      AND post_creator = ?`;
-          db.query(deleteQuery, [post_liker, post_id, post_creator], (err, results) => {
-        if (err) {
-          res.status(500).send('Error removing reaction');
-          return;
-        }
-        res.json(results);
-      });
-    }
-
-    // If the post_liker already had a reaction to the post, then update the value
-    else if (results.length > 0) {
-      const updateQuery = `UPDATE Likes l
-      SET l.username = ?
-      , l.post_id = ?
-      , l.post_creator = ?
-      , l.liked = ?
+    // If there is a follow relationship, then send back the posts
+    if (existingFollow.length > 0) {
+      // Query to know if there was already a like or dislike to this post from the post_liker
+      const likesQuery = `SELECT * FROM Likes l
       WHERE l.username = ?
       AND l.post_id = ?
       AND l.post_creator = ?`;
-      db.query(updateQuery, [post_liker, post_id, post_creator, liked, post_liker, post_id, post_creator], (err, results) => {
+      db.query(likesQuery, [post_liker, post_id, post_creator], (err, results) => {
         if (err) {
-          res.status(500).send('Error updating likes');
+          res.status(500).send('Error fetching likes');
           return;
         }
-        res.json(results);
-      });
-    }
-    // If there wasn't any reaction in the database, then create it
-    else {
-      const insertQuery = `INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALUES
-      (?, ?, ?, ?);`;
-      db.query(insertQuery, [post_liker, post_id, post_creator, liked], (err, results) => {
-        if (err) {
-          res.status(500).send('Error inserting likes');
-          return;
+
+        // If the user already liked or disliked the post and clicked the same button, then remove its reaction
+        if (results.length > 0 && results[0].liked === parseInt(liked)) {
+          const deleteQuery = `DELETE FROM Likes
+          WHERE username = ?
+          AND post_id = ?
+          AND post_creator = ?`;
+              db.query(deleteQuery, [post_liker, post_id, post_creator], (err, results) => {
+            if (err) {
+              res.status(500).send('Error removing reaction');
+              return;
+            }
+            res.json(results);
+          });
         }
-        res.json(results);
+
+        // If the post_liker already had a reaction to the post, then update the value
+        else if (results.length > 0) {
+          const updateQuery = `UPDATE Likes l
+          SET l.username = ?
+          , l.post_id = ?
+          , l.post_creator = ?
+          , l.liked = ?
+          WHERE l.username = ?
+          AND l.post_id = ?
+          AND l.post_creator = ?`;
+          db.query(updateQuery, [post_liker, post_id, post_creator, liked, post_liker, post_id, post_creator], (err, results) => {
+            if (err) {
+              res.status(500).send('Error updating likes');
+              return;
+            }
+            res.json(results);
+          });
+        }
+        // If there wasn't any reaction in the database, then create it
+        else {
+          const insertQuery = `INSERT INTO churrisbanca_social.Likes (username,post_id,post_creator,liked) VALUES
+          (?, ?, ?, ?);`;
+          db.query(insertQuery, [post_liker, post_id, post_creator, liked], (err, results) => {
+            if (err) {
+              res.status(500).send('Error inserting likes');
+              return;
+            }
+            res.json(results);
+          });
+        }
       });
     }
+    // If not then send unauthorized access to data
+    else
+      return res.status(403).json({ error: 'Invalid data' });
   });
+
 }
 
 
@@ -284,15 +300,30 @@ function fetchPostsFromUser(db, req, res) {
       GROUP BY p.id
       ORDER BY p.publish_date DESC
   `;
-
-  db.query(query, [username], (err, results) => {
+  const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
+  db.query(checkExistingFollowQuery, [req.user.username, username], (err, existingFollow) => {
     if (err) {
-      console.error('Error fetching posts from user:', err);
-      res.status(500).send('Error fetching posts');
+      console.error('Error checking existing follow:', err);
+      res.status(500).send('Database error.');
       return;
     }
-    res.json(results);
+    
+    // If there is a follow relationship, then send back the posts
+    if (existingFollow.length > 0) {
+      db.query(query, [username], (err, results) => {
+        if (err) {
+          console.error('Error fetching posts from user:', err);
+          res.status(500).send('Error fetching posts');
+          return;
+        }
+        res.json(results);
+      });
+    }
+    // If not then send unauthorized access to data
+    else
+      return res.status(403).json({ error: 'Invalid data' });
   });
+
 }
 
 function searchUsers(db, req, res) {
