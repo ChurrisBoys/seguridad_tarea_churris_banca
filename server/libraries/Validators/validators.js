@@ -6,6 +6,11 @@ const validateUsername = (username) => {
   return usernameRegex.test(username);
 };
 
+const validateSearch = (username) => {
+  const searchRegex = /^[a-zA-Z]{0,80}(\.[a-zA-Z]{0,80})?$/;
+  return searchRegex.test(username);
+};
+
 const validatePassword = (password) => {
   // Password should consist of only letters and numbers
   const passwordRegex = /^[a-zA-Z0-9]{1,80}$/;
@@ -39,6 +44,7 @@ const validateEmail = (email) => {
 
 module.exports = {
   validateUsername,
+  validateSearch,
   validatePassword,
   validateNormalText,
   validateAmount,

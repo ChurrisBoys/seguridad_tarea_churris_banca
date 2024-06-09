@@ -14,10 +14,6 @@ export default function SearchFriends() {
     const itemsPerPage = 3; 
 
 
-    useEffect(() => {
-        searchUsers();
-    }, [searchTerm]);
-
     const validateUsername = (username) => {
         // Username should consist of only letters and one period in the middle
         const usernameRegex = /^[a-zA-Z]{0,80}(\.[a-zA-Z]{0,80})?$/;
@@ -32,19 +28,17 @@ export default function SearchFriends() {
         }
         try {
             const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
-            console.log("Status " + response.status);
             if (response.status === 403 || response.status === 401) {
                 alert('You must be logged in, error: ' + response.status);
                 navigate("/error");
             }
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                return;
             }
             const data = await response.json();
             setFriends(data);
             setCurrentPage(1);
         } catch (error) {
-            console.error('Error fetching data:', error);
             setFriends([]);
         }
     };
@@ -57,11 +51,11 @@ export default function SearchFriends() {
                 navigate("/error");
             }
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                return;
             }
             searchUsers(); // Refresh the list after following/unfollowing
         } catch (error) {
-            console.error('Error following user:', error);
+            return;
         }
     };
 

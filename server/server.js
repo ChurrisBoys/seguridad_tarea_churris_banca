@@ -329,7 +329,7 @@ function searchUsers(db, req, res) {
     return;
   }
 
-  if (!validators.validateUsername(searchTerm)) {
+  if (!validators.validateSearch(searchTerm)) {
     return res.status(500).json({ error: 'Invalid data' });
   }
 
