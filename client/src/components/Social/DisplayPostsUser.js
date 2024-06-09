@@ -5,7 +5,7 @@ import './SocialFeed.css'
 import ImgAsset from './public'
 import config from '../../config';
 
-export default function DisplayPosts(props) {
+export default function DisplayPostsUser({user, itemsOnPage}) {
 	const navigate = useNavigate();
 	const [posts, setPosts] = useState([]);
 	const [actualPage, setPage] = useState(1);
@@ -73,7 +73,6 @@ export default function DisplayPosts(props) {
 
 		
 	// Applying pagination
-	const itemsOnPage = props.itemsOnPage;
 	const numberOfPages = Math.ceil(posts.length / itemsOnPage);
 	const searchParams = new URLSearchParams(window.location.search);
 	const start = searchParams.get('page') || 1;
