@@ -56,7 +56,7 @@ export default function DisplayMyPosts({ itemsOnPage }) {
     const start = (actualPage - 1) * itemsOnPage;
     const end = actualPage * itemsOnPage;
     const listPosts = userPosts.slice(start, end).map(post => (
-        <div className='Post' key={post.id}>
+        <div key={post.id} className='Post' key={post.id}>
             <div className='PostBody'>
                 <img className='PostImage' src={ImgAsset.SocialFeed_PostImage} alt="Post" />
                 <div className='UserAndText'>

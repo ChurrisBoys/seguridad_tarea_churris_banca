@@ -92,7 +92,7 @@ export default function DisplayPosts(props) {
 			
 			// Creating the Posts with the raw post data
 			.map(post =>
-				<div className='Post'>
+				<div key={post.id} className='Post'>
 					<div className='PostBody'>
 						<img className='PostImage' src = {post.image !== null ? RenderImage(post.image.data) : ImgAsset.SocialFeed_PostImage} />
 						<div className='UserAndText'>
