@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './SocialFeed.css';
 import ImgAsset from './public';
 import config from '../../config';
@@ -8,6 +9,7 @@ export default function DisplayPostsUser({ user, itemsOnPage }) {
     const [userPosts, setUserPosts] = useState([]);
     const [actualPage, setPage] = useState(1);
     const [numberOfPages, setNumberOfPages] = useState(0);
+    const navigate = useNavigate();
 
     const GoToNextPage = (event) => {
         event.preventDefault();
@@ -24,6 +26,9 @@ export default function DisplayPostsUser({ user, itemsOnPage }) {
         const fetchPosts = async () => {
             try {
                 const response = await authFetch(`${config.BASE_URL}/api/posts/${user}`);
+                if (response.status == 403 || response.status == 401) {
+                   navigate("/error");
+                }
                 const databasePosts = await response.json();
                 setUserPosts(databasePosts);
                 setNumberOfPages(Math.ceil(databasePosts.length / itemsOnPage));
