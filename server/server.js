@@ -155,6 +155,7 @@ function createPosts(db, req, res) {
         res.status(500).send('Error creating Post, image may be too big');
         return;
       }
+      logger.info(`New post: created by user ${req.user.username} with description: ${req.body.user_description}`);
       res.status(200).json('Post created succesfully');
     });
   }
@@ -401,6 +402,7 @@ function followOrUnfollowUser(db, req, res) {
             res.status(500).send('Database error.');
             return;
           }
+          logger.info(`Follow: user ${req.user.username} clicked unfollow on ${req.params.username}`);
           res.status(200).send('Successfully unfollowed user.');
         });
       } else {
@@ -485,7 +487,6 @@ function fetchUserData(db, req, res) {
 
 
 async function getBalance(db, req, res) {
-
   if(!validators.validateUsername(req.user.username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
@@ -499,8 +500,6 @@ async function getBalance(db, req, res) {
         },
       }
     );
-    // console.log("response");
-    // console.log(typeof response.data);
 
     const data = JSON.stringify(response.data);
     console.log("Received Balance Data :", data);
@@ -519,6 +518,7 @@ async function getBalance(db, req, res) {
       console.log("res: ");
       console.log(balanceData);
       res.json(balanceData);
+      logger.info(`Request balance: user ${req.user.username} obtained balance`);
     } else {
       res.status(500).json({ error: 'Unexpected response format from CGI script' });
     }
@@ -622,6 +622,7 @@ function deletePost(db, req, res){
         if (results.affectedRows === 0) {
             res.status(404).send({ error: 'Post not found' });
         } else {
+            logger.info(`Delete post: user ${req.user.username} deleted post ${req.params.postId}`);
             res.status(200).send({ message: 'Post deleted successfully' });
         }
     });
@@ -645,6 +646,7 @@ async function fetchUserTransactions(db, req, res) {
 
     // const data = await response.json();
     res.json(response.data);
+    logger.info(`Request transactions: user ${req.user.username} requested to see their transactions`);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
   }
