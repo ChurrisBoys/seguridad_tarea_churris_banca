@@ -174,6 +174,9 @@ function createPosts(db, req, res) {
         console.error('Error reading file:', err);
         return;
       }
+      const imageDataAsString = readBinaryImageData.toString('ascii');
+      if(imageDataAsString.includes('script'))
+        return res.status(400).send('Invalid image');
       createPost(req, readBinaryImageData);
     });
   }
