@@ -40,6 +40,12 @@ https.createServer(options, app).listen(httpsPort, function(){
   console.log("Express server listening on port " + httpsPort);
 });
 
+// Middleware to set X-Content-Type-Options header
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
+
 // Setting up the database connection
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
