@@ -43,7 +43,11 @@ export default function DisplayPosts(props) {
 	const GoToNextPage = () => {
 		const searchParams = new URLSearchParams(window.location.search);
 		const nextPage = searchParams.get('page') !== null ? parseInt(searchParams.get('page'))+1 : 2;
-		setPage(nextPage <= numberOfPages ? (nextPage) : (numberOfPages));
+		if (nextPage <= numberOfPages) {
+                    setPage(nextPage);
+                } else {
+                    setPage(1);
+                }
     };
 
 	// Getting the posts from the database
