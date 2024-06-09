@@ -79,10 +79,12 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     alert('You must be logged in, error: ' + response.status);
                 }
                 const databaseTransactions = await response.json();
+                if(databaseTransactions === null || databaseTransactions.length === 0)
+                    databaseTransactions = [0,0,0,0];
                 setTransactions(databaseTransactions);
-			} catch (error) {
-				console.error('Failed to fetch transactions', error);
-			}
+		} catch (error) {
+			console.error('Failed to fetch transactions', error);
+		}
 		};
 		fetchTransactions();
 	}, []);
