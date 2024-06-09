@@ -1,5 +1,3 @@
-2024-06-09T21:40:27.310Z [info]: Follow: user ${req.user.username} clicked follow on ${req.params.username}
-2024-06-09T21:40:30.859Z [info]: Follow: user ${req.user.username} clicked follow on ${req.params.username}
 2024-06-09T21:41:52.746Z [info]: Follow: user carlos.sanchezblanco clicked follow on carlos.ramirezmasis
 2024-06-09T21:42:01.617Z [info]: Follow: user carlos.sanchezblanco clicked follow on esteban.leonrodriguez
 2024-06-09T21:52:47.526Z [info]: Follow: user emilia.viquez clicked follow on carlos.ramirezmasis
@@ -16,3 +14,9 @@
 2024-06-09T21:56:08.192Z [info]: Request transactions: user emilia.viquez requested to see their transactions
 2024-06-09T21:56:08.212Z [info]: Request transactions: user emilia.viquez requested to see their transactions
 2024-06-09T21:56:08.216Z [info]: Request balance: user emilia.viquez obtained balance
+2024-06-09T22:02:18.868Z [info]: Request transactions: user emilia.viquez requested to see their transactions
+2024-06-09T22:02:18.896Z [info]: Request balance: user emilia.viquez obtained balance
+2024-06-09T22:02:18.898Z [info]: Request transactions: user emilia.viquez requested to see their transactions
+2024-06-09T22:02:18.935Z [info]: Request balance: user emilia.viquez obtained balance
+2024-06-09T22:02:26.913Z [info]: New post: created by user emilia.viquez with description: HOli 123 ahso
+2024-06-09T22:02:31.066Z [info]: Delete post: user emilia.viquez deleted post 28
