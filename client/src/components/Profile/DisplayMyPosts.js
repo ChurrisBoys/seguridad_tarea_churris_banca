@@ -14,6 +14,8 @@ export default function DisplayMyPosts({ itemsOnPage }) {
         const nextPage = actualPage + 1;
         if (nextPage <= numberOfPages) {
             setPage(nextPage);
+        } else {
+           setPage(1);
         }
     };
 
