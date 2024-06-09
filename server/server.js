@@ -549,7 +549,7 @@ function fetchMyPosts(db, req, res) {
       return res.status(403).json({ error: 'Invalid data' });
     }
     const query = `
-        SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, SUM(l.liked = 0) as dislikes
+        SELECT p.id, p.username, p.description, SUM(l.liked = 1) as likes, p.image, SUM(l.liked = 0) as dislikes
         FROM Posts p
         LEFT JOIN Likes l ON l.post_id = p.id
         WHERE p.username = ? AND p.is_deleted != 1

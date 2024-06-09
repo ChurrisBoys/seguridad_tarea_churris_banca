@@ -90,7 +90,7 @@ function MyProfile() {
 
                 <h2>My Posts</h2>
                 <div className='posts_by_me'>
-        			<DisplayMyPosts itemsOnPage={3}/>
+        			<DisplayMyPosts itemsOnPage={3} onError={displayError}/>
                 </div>
             </div>
             {isPopupOpen && <EditProfilePopup onClose={closePopup} onUpdate={updateUserInfo} onError={displayError} />}
