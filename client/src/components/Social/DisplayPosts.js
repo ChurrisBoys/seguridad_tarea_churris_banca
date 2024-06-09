@@ -30,7 +30,7 @@ export default function DisplayPosts(props) {
 				'authorization': 'Bearer ' + localStorage.getItem('token')
 			},
 		});
-		if (response.status == 403 || response.status == 401) {
+		if (response.status === 403 || response.status === 401) {
 			alert('You must be logged in, error: ' + response.status);
 			navigate("/error");
 		}
@@ -61,7 +61,7 @@ export default function DisplayPosts(props) {
 					}
 				}
 			);
-			if (response.status == 403 || response.status == 401) {
+			if (response.status === 403 || response.status === 401) {
 				alert('You must be logged in, error: ' + response.status);
 				navigate("/error");
 			}

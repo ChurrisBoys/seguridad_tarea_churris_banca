@@ -33,7 +33,7 @@ export default function SearchFriends() {
         try {
             const response = await authFetch(`${config.BASE_URL}/api/friends?term=${searchTerm}`);
             console.log("Status " + response.status);
-            if (response.status == 403 || response.status == 401) {
+            if (response.status === 403 || response.status === 401) {
                 alert('You must be logged in, error: ' + response.status);
                 navigate("/error");
             }
@@ -52,7 +52,7 @@ export default function SearchFriends() {
     const followUser = async (username) => {
         try {
             const response = await authFetch(`${config.BASE_URL}/api/follows/${username}`);
-            if (response.status == 403 || response.status == 401) {
+            if (response.status === 403 || response.status === 401) {
                 alert('You must be logged in, error: ' + response.status);
                 navigate("/error");
             }

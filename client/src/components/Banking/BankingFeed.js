@@ -75,7 +75,7 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     'authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             });
-            if (response.status == 403) {
+            if (response.status === 403) {
                     alert('You must be logged in, error: ' + response.status);
                 }
                 const databaseTransactions = await response.json();
