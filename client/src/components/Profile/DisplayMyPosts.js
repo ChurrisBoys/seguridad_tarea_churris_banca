@@ -3,8 +3,10 @@ import '../Social/SocialFeed.css';
 import ImgAsset from '../Social/public';
 import config from '../../config';
 import { authFetch } from '../Common/Utils';
+import { useNavigate } from "react-router-dom"
 
 export default function DisplayMyPosts({ itemsOnPage }) {
+    const navigate = useNavigate();
     const [userPosts, setUserPosts] = useState([]);
     const [actualPage, setPage] = useState(1);
     const [imageData, setImageData] = useState(null);
@@ -36,7 +38,7 @@ export default function DisplayMyPosts({ itemsOnPage }) {
 
             if (response.status === 403 || response.status === 401) {
 				alert('You must be logged in, error: ' + response.status);
-				onError();
+				navigate("/error");
 			}
 
             if (!response.ok) {
@@ -54,7 +56,7 @@ export default function DisplayMyPosts({ itemsOnPage }) {
             const response = await authFetch(`${config.BASE_URL}/api/myprofile`);
             if (response.status === 403 || response.status === 401) {
 				alert('You must be logged in, error: ' + response.status);
-				onError();
+				navigate("/error");
 			}
             const databasePosts = await response.json();
             setUserPosts(databasePosts);
@@ -68,13 +70,13 @@ export default function DisplayMyPosts({ itemsOnPage }) {
     }, [itemsOnPage]);
 
     // Applying pagination
-	const numberOfPages = Math.ceil(posts.length / itemsOnPage);
+	const numberOfPages = Math.ceil(userPosts.length / itemsOnPage);
 	const searchParams = new URLSearchParams(window.location.search);
 	const start = searchParams.get('page') || 1;
 
     return (
         <div className='Posts'>
-		{posts
+		{userPosts
 			.filter((post, i) => 
 				(((start - 1) * itemsOnPage) < i + 1) && 
 				(i+1 <= start * itemsOnPage)
