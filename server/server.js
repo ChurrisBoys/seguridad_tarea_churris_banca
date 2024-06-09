@@ -25,7 +25,6 @@ const UserService = require('./apps/user/userService');
 const { callbackify } = require('util');
 
 const app = express();
-const port = 3003;
 const httpsPort = 3001; // Used this port because of iptables
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -121,8 +120,6 @@ function startServer(db) {
   app.put('/api/delete/:postId', authenticateToken, (req, res) => {
     deletePost(db, req, res);
   })
-
-  startListening();
 }
 
 
@@ -130,12 +127,6 @@ function prepareDependencies() {
   // add more dependencies here
   app.use('/auth', createAuthRouter(new UserService(db), jwtSecretKey));
 
-}
-
-function startListening() {
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
 }
 
 startServer(db);
