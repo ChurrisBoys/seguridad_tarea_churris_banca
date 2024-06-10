@@ -154,6 +154,28 @@ function prepareDataForSigning(transactionData) {
     return dataBuffer;
 }
 
+async function createTransactionRequest(transactionData, signature) {
+    try {
+        const token = localStorage.getItem('token'); // Get JWT token 
+        const response = await fetch(`${config.BASE_URL}/banking/createTransaction`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token // Include JWT in header
+            },
+            body: JSON.stringify({
+                transactionData,
+                signature
+            })
+        });
+
+        return response;
+    } catch (error) {
+        console.error('Error sending transaction:', error);
+        alert('Error sending transaction. Please try again later.');
+    }
+}
+
 async function signData(importedKey, dataToSend) {
     if (!importedKey) {
         alert('Error signing data');
@@ -166,7 +188,7 @@ async function signData(importedKey, dataToSend) {
         const signatureHex = Array.from(new Uint8Array(signatureBuffer))
             .map((b) => b.toString(16).padStart(2, "0"))
             .join("");
-        return signatureHex; 
+        return signatureHex;
     } catch (error) {
         console.error('Error signing data:', error);
         alert('Error signing data.');
@@ -213,24 +235,15 @@ const CreateTransaction = () => {
             return; // Exit if signing failed
         }
 
-        try {
-            // Send the signed data to the server
-            const token = localStorage.getItem('token'); // Get JWT token 
-            const response = await fetch(`${config.BASE_URL}/createTransaction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token // Include JWT in header
-                },
-                body: JSON.stringify({
-                    transactionData,
-                    signature
-                })
-            });
+        const response =
+            await createTransactionRequest(transactionData, signature);
 
-        } catch (error) {
-            console.error('Error sending transaction:', error);
-            alert('Error sending transaction. Please try again later.');
+        if (response.status === 400) {
+            alert('Invalid signature');
+        } else if (response.status === 200) {
+            alert('Transaction created successfully');
+        } else {
+            alert('Error creating transaction. Please try again later.');
         }
     };
 
@@ -248,3 +261,5 @@ const CreateTransaction = () => {
 };
 
 export default CreateTransaction;
+
+

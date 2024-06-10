@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
-require('dotenv').config({ path: './secrets.env'});
+require('dotenv').config({ path: './secrets.env' });
 const axios = require('axios');
 const https = require('https');
 
@@ -16,6 +16,7 @@ const logger = require('./libraries/Log/logger');
 
 // Routers for the different functionalities
 const createAuthRouter = require('./apps/auth/authEntry');
+const createBankingRouter = require('./apps/banking/bankingEntry');
 
 // Middleware
 const authenticateToken = require('./libraries/Session/authMiddleware');
@@ -35,7 +36,7 @@ const options = {
   key: fs.readFileSync(process.env.SERVER_PK),
   cert: fs.readFileSync(process.env.SERVER_CRT) // TODO: Add more security to the access of the private key cert from javascript based attacks or related
 };
-https.createServer(options, app).listen(httpsPort, function(){
+https.createServer(options, app).listen(httpsPort, function () {
   console.log("Express server listening on port " + httpsPort);
 });
 
@@ -50,7 +51,7 @@ const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database : process.env.DB_NAME
+  database: process.env.DB_NAME
 });
 
 const jwtSecretKey = process.env.JWT_SECRET;
@@ -73,7 +74,7 @@ function startServer(db) {
     createPosts(db, req, res);
   })
 
-  app.get('/api/posts', authenticateToken , (req, res) => {
+  app.get('/api/posts', authenticateToken, (req, res) => {
     fetchPosts(db, req, res);
   })
 
@@ -92,15 +93,15 @@ function startServer(db) {
   app.get('/api/friends', authenticateToken, (req, res) => {
     searchUsers(db, req, res);
   })
-  
+
   app.get('/getBalance', authenticateToken, async (req, res) => {
     getBalance(db, req, res);
   })
-  
+
   app.post('/getUserTransactions', authenticateToken, async (req, res) => {
     fetchUserTransactions(db, req, res);
   })
-  
+
   app.get('/api/profile/:username', authenticateToken, (req, res) => {
     fetchUserData(db, req, res);
   })
@@ -126,6 +127,7 @@ function startServer(db) {
 function prepareDependencies() {
   // add more dependencies here
   app.use('/auth', createAuthRouter(new UserService(db), jwtSecretKey));
+  app.use('/banking', createBankingRouter());
 
 }
 
@@ -135,7 +137,7 @@ function createPosts(db, req, res) {
   const binaryImageData = null;
   const file = req.file;
 
-  
+
 
   const createPost = (req, binaryImageData) => {
 
@@ -146,7 +148,7 @@ function createPosts(db, req, res) {
     if (!validators.validateUsername(req.body.logged_in_user)) {
       return res.status(403).json({ error: 'Invalid data' });
     }
-  
+
 
     // Creating the Post
     const createPostQuery = 'INSERT INTO churrisbanca_social.Posts (username,description,image) VALUES (?,?,?);';
@@ -167,7 +169,7 @@ function createPosts(db, req, res) {
         return;
       }
       const imageDataAsString = readBinaryImageData.toString('ascii');
-      if(imageDataAsString.includes('script'))
+      if (imageDataAsString.includes('script'))
         return res.status(400).send('Invalid image');
       createPost(req, readBinaryImageData);
     });
@@ -181,7 +183,7 @@ function createPosts(db, req, res) {
 
 function fetchPosts(db, req, res) {
 
-  if (!validators.validateUsername(req.query.cu)){
+  if (!validators.validateUsername(req.query.cu)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
   const postFromFollowingQuery = `
@@ -191,7 +193,7 @@ function fetchPosts(db, req, res) {
     l.post_id = p.id
     WHERE p.username IN (SELECT u.user2 FROM Follows u WHERE u.user1 = ?) AND p.is_deleted != 1
     GROUP BY p.id`;
-  
+
   db.query(postFromFollowingQuery, [req.user.username], (err, results) => {
     if (err) {
       res.status(500).send('Error fetching posts');
@@ -238,7 +240,7 @@ function likeOrDislikePost(db, req, res) {
           WHERE username = ?
           AND post_id = ?
           AND post_creator = ?`;
-              db.query(deleteQuery, [post_liker, post_id, post_creator], (err, results) => {
+          db.query(deleteQuery, [post_liker, post_id, post_creator], (err, results) => {
             if (err) {
               res.status(500).send('Error removing reaction');
               return;
@@ -291,7 +293,7 @@ function fetchPostsFromUser(db, req, res) {
   if (!validators.validateUsername(req.query.cu)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
-  
+
   const wantedUser = req.params.username;
   if (!validators.validateUsername(wantedUser)) {
     return res.status(403).json({ error: 'Invalid data' });
@@ -427,20 +429,20 @@ function updateProfile(db, req, res) {
 
   // Verify if user is logged in
   if (!currentUser) {
-    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+    return res.status(401).json({ error: 'Unauthorized, user not logged in' });
   } else {
     // Obtain the username
     const username = req.user.username;
 
-    if (!validators.validateUsername(username)) { 
+    if (!validators.validateUsername(username)) {
       return res.status(403).json({ error: 'Invalid data' });
     }
     const { email, telnum } = req.body;
 
-    if(!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
+    if (!validators.validateEmail(email) || !validators.validatePhoneNumber(telnum)) {
       return res.status(500).json({ error: 'Invalid data' });
     }
-    
+
     const query = 'UPDATE Users SET email = ?, telnum = ? WHERE username = ?';
     const values = [email, telnum, username];
     db.query(query, values, (err, results) => {
@@ -458,7 +460,7 @@ function fetchUserData(db, req, res) {
   const username = req.params.username;
   const actualUser = req.user.username;
 
-  if(!validators.validateUsername(username)) {
+  if (!validators.validateUsername(username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
 
@@ -487,13 +489,13 @@ function fetchUserData(db, req, res) {
 
 
 async function getBalance(db, req, res) {
-  if(!validators.validateUsername(req.user.username)) {
+  if (!validators.validateUsername(req.user.username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
 
   try {
-    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi', 
-      `username=${req.user.username}`, 
+    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi',
+      `username=${req.user.username}`,
       {
         headers: {
           'Content-Type': 'text/plain'
@@ -532,12 +534,12 @@ function fetchMyPosts(db, req, res) {
 
   // Verify if user is logged in
   if (!currentUser) {
-    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+    return res.status(401).json({ error: 'Unauthorized, user not logged in' });
   } else {
     // Obtain the username
     const username = req.user.username;
 
-    if (!validators.validateUsername(username)) { 
+    if (!validators.validateUsername(username)) {
       return res.status(403).json({ error: 'Invalid data' });
     }
     const query = `
@@ -565,12 +567,12 @@ function fetchMyProfileData(db, req, res) {
 
   // Verify if user is logged in
   if (!currentUser) {
-    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+    return res.status(401).json({ error: 'Unauthorized, user not logged in' });
   } else {
     // Obtain the username
     const username = req.user.username;
 
-    if (!validators.validateUsername(username)) { 
+    if (!validators.validateUsername(username)) {
       return res.status(403).json({ error: 'Invalid data' });
     }
 
@@ -595,48 +597,48 @@ function fetchMyProfileData(db, req, res) {
   }
 }
 
-function deletePost(db, req, res){
+function deletePost(db, req, res) {
   const currentUser = req.user
 
   // Verify if user is logged in
   if (!currentUser) {
-    return res.status(401).json({error: 'Unauthorized, user not logged in'});
+    return res.status(401).json({ error: 'Unauthorized, user not logged in' });
   } else {
     // Obtain the username
     const username = req.user.username;
 
-    if (!validators.validateUsername(username)) { 
+    if (!validators.validateUsername(username)) {
       return res.status(403).json({ error: 'Invalid data' });
     }
 
     const postId = req.params.postId;
     const query = 'UPDATE Posts SET is_deleted = 1 WHERE id = ? AND username = ?';
     const values = [postId, username];
-    
+
     db.query(query, values, (err, results) => {
-        if (err) {
-            console.error('Error deleting post:', err);
-            res.status(500).send({ error: 'Error deleting post' });
-            return;
-        }
-        if (results.affectedRows === 0) {
-            res.status(404).send({ error: 'Post not found' });
-        } else {
-            logger.info(`Delete post: user ${req.user.username} deleted post ${req.params.postId}`);
-            res.status(200).send({ message: 'Post deleted successfully' });
-        }
+      if (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).send({ error: 'Error deleting post' });
+        return;
+      }
+      if (results.affectedRows === 0) {
+        res.status(404).send({ error: 'Post not found' });
+      } else {
+        logger.info(`Delete post: user ${req.user.username} deleted post ${req.params.postId}`);
+        res.status(200).send({ message: 'Post deleted successfully' });
+      }
     });
   }
-  }
+}
 
 async function fetchUserTransactions(db, req, res) {
-  if(!validators.validateUsername(req.user.username)) {
+  if (!validators.validateUsername(req.user.username)) {
     return res.status(403).json({ error: 'Invalid data' });
   }
-  
+
   try {
-    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S', 
-    `username=${req.user.username}`, 
+    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S',
+      `username=${req.user.username}`,
       {
         headers: {
           'Content-Type': 'text/plain'
