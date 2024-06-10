@@ -6,13 +6,13 @@ import config from '../../config'; // Make sure you have a config file for your 
 const AmountInput = () => {
     const [amount, setAmount] = useState('');
     const [amountError, setAmountError] = useState('');
-    const regex = '^\d{1,6}(\.\d{1,3})?$';
+    const regex = /^\d{1,6}(\.\d{1,3})?$/
 
     const handleChange = (event) => {
         const value = event.target.value;
         setAmount(value);
 
-        if (!value.match(regex)) {
+        if (!regex.test(value)) {
             setAmountError('Amount must be a number with up to 6 digits before the decimal and up to 3 digits after the decimal');
         } else {
             setAmountError('');
