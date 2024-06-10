@@ -1,15 +1,18 @@
 // This file contains utility functions for crypto operations
 const crypto = require('crypto');
+const webcrypto = require('crypto').webcrypto
 
 function verifySignature(publicKey, signature, data) {
-    const verify = crypto.createVerify('SHA384');
-    verify.update(data);
-    verify.end();
-    return verify.verify(publicKey, signature);
+    return webcrypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, signature, data);
 }
 
 function getPublicKeyFromCertificate(certificate) {
     return crypto.createPublicKey(certificate);
 }
 
-module.exports = { verifySignature, getPublicKeyFromCertificate };
+function convertKeyObjectToCryptoKey(keyObject) {
+    let pem = keyObject.export({ type: 'spki', format: 'pem' });
+    return webcrypto.subtle.importKey('spki', new TextEncoder().encode(pem), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-384' }, false, ['verify']);
+}
+
+module.exports = { verifySignature, getPublicKeyFromCertificate, convertKeyObjectToCryptoKey };

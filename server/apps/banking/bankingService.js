@@ -1,5 +1,5 @@
 const readFile = require('../../libraries/FileSystem/FSutils');
-const { verifySignature, getPublicKeyFromCertificate } = require('../../libraries/Crypto/cryptoUtils');
+const { verifySignature, getPublicKeyFromCertificate, convertKeyObjectToCryptoKey } = require('../../libraries/Crypto/cryptoUtils');
 
 class BankingService {
     
@@ -20,6 +20,9 @@ class BankingService {
 
         // Import public key
         const publicKey = getPublicKeyFromCertificate(certificate);
+
+        // Convert public key to CryptoKey object
+        publicKey = await convertKeyObjectToCryptoKey(publicKey);
 
         // Verify signature
         isValid = verifySignature(publicKey, signature, data);
