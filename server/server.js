@@ -32,8 +32,8 @@ const upload = multer({ dest: 'userPostImages/' }); // Destination folder to sto
 
 // Setting up https for express js
 const options = {
-  key: fs.readFileSync('../../equipo1_churris_server.key'),
-  cert: fs.readFileSync('../../equipo1_churris_server.crt') // TODO: Add more security to the access of the private key cert from javascript based attacks or related
+  key: fs.readFileSync(process.env.SERVER_PK),
+  cert: fs.readFileSync(process.env.SERVER_CRT) // TODO: Add more security to the access of the private key cert from javascript based attacks or related
 };
 https.createServer(options, app).listen(httpsPort, function(){
   console.log("Express server listening on port " + httpsPort);
