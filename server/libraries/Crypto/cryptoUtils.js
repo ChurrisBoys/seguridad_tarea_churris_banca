@@ -12,7 +12,6 @@ function getPublicKeyFromCertificate(certificate) {
 
 async function convertKeyObjectToCryptoKey(keyObject) {
     let exportedSpkiPem = keyObject.export({ type: 'spki', format: 'pem' });
-    console.log(exportedSpkiPem);
     exportedSpkiPem = preparePublicKeyForImport(exportedSpkiPem);
     return await subtle.importKey('spki', exportedSpkiPem, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-384' }, false, ['verify']);
 }

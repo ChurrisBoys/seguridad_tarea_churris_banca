@@ -138,7 +138,7 @@ async function importKey(keyData) {
                 name: 'RSASSA-PKCS1-v1_5',
                 hash: 'SHA-384'
             },
-            true,
+            false,
             ['sign']
         );
         return importedKey;
