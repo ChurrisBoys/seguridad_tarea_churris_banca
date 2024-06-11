@@ -8,6 +8,8 @@ function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
+  // Check if token 
+
   if (token == null) return res.sendStatus(401); // If no token, return unauthorized
 
   // Verify the token

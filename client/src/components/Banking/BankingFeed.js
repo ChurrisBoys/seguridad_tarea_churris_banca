@@ -15,6 +15,11 @@ function SliceTransactions(currentPage, pageSize) {
     return transactions.slice(startIndex, endIndex);
 }
 
+function truncateToThreeDecimals(num) {
+    return Math.trunc(num * 1000) / 1000;
+}
+
+
 
 const CreateTransactionButton = () => {
     return (
@@ -35,7 +40,7 @@ function TransactionRow({ transaction }) {
         <tr>
             <td>{transaction[0]}</td>
             <td>{transaction[1]}</td>
-            <td>{transaction[2]}</td>
+            <td>{truncateToThreeDecimals(transaction[2])}</td>
             <td>{transaction[3]}</td>
         </tr>
     );
@@ -100,6 +105,7 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                     },
                 });
                 const data = await response.json();
+                data.balance = truncateToThreeDecimals(data.balance);
                 setCurrencyInfo(data);
             } catch (error) {
                 console.error('Error fetching balance data:', error);
@@ -115,7 +121,7 @@ function BankingFeed({ transactions, currentPage, setPage }) {
                 <div className="row">
                     <div className="col-10">
                         <div className="currency-amount-info">
-                            <p>Currency: {currencyInfo.currency}</p>
+                            <p>Currency: {currencyInfo.currency}</p> 
                             <p>Total Amount: {currencyInfo.balance}</p>
                         </div>
                         <TransactionTable transactions={transactionss} />

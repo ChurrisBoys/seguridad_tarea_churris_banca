@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Layout from "../Common/Layout";
 import config from '../../config'; // Make sure you have a config file for your BASE_URL
 import { redirect, useNavigate } from 'react-router-dom';
+import { validateAmount, validateUsername } from '../../Validators/validators';
 
 // Input Components (with validation)
 const AmountInput = () => {
@@ -43,8 +44,8 @@ const RecipientInput = () => {
         const value = event.target.value;
         setRecipient(value);
 
-        if (value.length < 3) {
-            setRecipientError('Recipient username must be at least 3 characters');
+        if (!validateUsername(value)) {
+            setRecipientError('Invalid recipient username');
         } else {
             setRecipientError('');
         }
@@ -210,13 +211,13 @@ const CreateTransaction = () => {
         const privateKey = event.target.privateKey.files[0];
 
         // Validate form data
-        if (amount <= 0) {
-            alert('Amount must be greater than 0');
+        if (validateAmount(amount) === false){
+            alert('Invalid amount');
             return;
         }
 
-        if (recipient.length < 3) {
-            alert('Recipient username must be at least 3 characters');
+        if (validateUsername(recipient) === false){
+            alert('Invalid recipient username');
             return;
         }
 
@@ -245,6 +246,9 @@ const CreateTransaction = () => {
             alert('Invalid signature');
         } else if (response.status === 200) {
             navigate('/banking');
+        } else if (response.status === 403) {
+            localStorage.removeItem('token');
+            navigate('/');
         } else {
             alert('Error creating transaction. Please try again later.');
         }

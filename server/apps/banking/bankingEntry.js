@@ -27,6 +27,10 @@ function createBankingRouter() {
             return res.status(400).json({ message: 'Invalid recipient' });
         }
 
+        if (req.user.username === transactionData.recipient) {
+            return res.status(400).json({ message: 'Cannot send money to yourself' });
+        }
+
         data = JSON.stringify(transactionData);
         dataSignature = hexStringToArrayBuffer(signature);
 
