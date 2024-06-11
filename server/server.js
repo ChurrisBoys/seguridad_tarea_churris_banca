@@ -34,7 +34,8 @@ const upload = multer({ dest: 'userPostImages/' }); // Destination folder to sto
 // Setting up https for express js
 const options = {
   key: fs.readFileSync(process.env.SERVER_PK),
-  cert: fs.readFileSync(process.env.SERVER_CRT) // TODO: Add more security to the access of the private key cert from javascript based attacks or related
+  cert: fs.readFileSync(process.env.SERVER_CRT), // TODO: Add more security to the access of the private key cert from javascript based attacks or related
+  ca_cert: fs.readFileSync(process.env.CA_CRT)
 };
 https.createServer(options, app).listen(httpsPort, function () {
   console.log("Express server listening on port " + httpsPort);
@@ -494,12 +495,17 @@ async function getBalance(db, req, res) {
   }
 
   try {
-    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi',
+    const response = await axios.post('https://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi',
       `username=${req.user.username}`,
       {
         headers: {
           'Content-Type': 'text/plain'
         },
+        httpsAgent: new https.Agent({
+          cert: options.cert,
+          key: options.key,
+          ca: options.ca_cert
+        })
       }
     );
 
@@ -637,12 +643,17 @@ async function fetchUserTransactions(db, req, res) {
   }
 
   try {
-    const response = await axios.post('http://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S',
+    const response = await axios.post('https://172.24.131.198/cgi-bin/seguridad_tarea_churris_banca_cgi/bin/seguridad_tarea_churris_banca_cgi.cgi?a=S',
       `username=${req.user.username}`,
       {
         headers: {
           'Content-Type': 'text/plain'
         },
+        httpsAgent: new https.Agent({
+          cert: options.cert,
+          key: options.key,
+          ca: options.ca_cert
+        })
       }
     );
 
