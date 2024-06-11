@@ -2,7 +2,7 @@ const readFile = require('../../libraries/FileSystem/FSutils');
 const { verifySignature, getPublicKeyFromCertificate, convertKeyObjectToCryptoKey } = require('../../libraries/Crypto/cryptoUtils');
 
 class BankingService {
-    
+
     async getCertificate(username) {
         // Get public key from file
         const publicKey = await readFile(process.env.USER_CRT_PATH, `${username}.crt`);
@@ -19,18 +19,22 @@ class BankingService {
         }
 
         // Import public key
-        const publicKey = getPublicKeyFromCertificate(certificate);
+        const CryptoPublicKey = getPublicKeyFromCertificate(certificate);
 
         // Convert public key to CryptoKey object
-        publicKey = await convertKeyObjectToCryptoKey(publicKey);
+        let publicKey = await convertKeyObjectToCryptoKey(CryptoPublicKey);
 
         // Verify signature
-        isValid = verifySignature(publicKey, signature, data);
+        isValid = await verifySignature(publicKey, signature, data);
 
         // Return result
         return isValid;
     }
-  
+
+    async createTransaction(transactionData) {
+
+    }
+
 }
 
 module.exports = BankingService;

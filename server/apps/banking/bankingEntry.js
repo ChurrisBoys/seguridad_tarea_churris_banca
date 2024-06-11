@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authenticateToken = require('../../libraries/Session/authMiddleware');
-const {validateAmount, validateUsername } = require('../../libraries/Validators/validators');
+const { validateAmount, validateUsername } = require('../../libraries/Validators/validators');
 const BankingService = require('./bankingService')
 
 function createBankingRouter() {
@@ -27,22 +27,23 @@ function createBankingRouter() {
         }
 
         data = JSON.stringify(transactionData);
-        dataSignature = Buffer.from(signature, 'hex');
-    
+        dataSignature = hexStringToArrayBuffer(signature);
+
         try {
             // Verify signature
-            const isValid = await bankingService.verifySignature(req.user.username, dataSignature, data);
+            dataToVerify = new TextEncoder().encode(data);
+            const isValid = await bankingService.verifySignature(req.user.username, dataSignature, dataToVerify);
             if (!isValid) {
-                return res.status(400).json({ message: 'Invalid signature. Cannot verify user'});
+                return res.status(400).json({ message: 'Invalid signature. Cannot verify user' });
             }
 
             return res.status(200).json({ message: 'Transaction created successfully' });
-    
+
             // Create transaction
-            // const transaction = await createTransaction(transactionData);
-    
+            // const transaction = 
+
             // res.json({ transaction });
-    
+
         } catch (error) {
             console.error('Error creating transaction:', error);
             res.status(500).json({ message: 'Internal server error' });
@@ -52,6 +53,27 @@ function createBankingRouter() {
 
 
     return router;
+}
+
+function hexStringToArrayBuffer(hexString) {
+    // Remove any potential whitespace from the hex string
+    const cleanedHexString = hexString.replace(/\s/g, '');
+
+    // Ensure the hex string has an even length
+    if (cleanedHexString.length % 2 !== 0) {
+        throw new Error('Invalid hex string: Length must be even.');
+    }
+
+    // Create an ArrayBuffer with half the length of the hex string
+    const buffer = new ArrayBuffer(cleanedHexString.length / 2);
+    const view = new Uint8Array(buffer);
+
+    // Convert each pair of hex characters to a byte
+    for (let i = 0; i < cleanedHexString.length; i += 2) {
+        view[i / 2] = parseInt(cleanedHexString.substring(i, i + 2), 16);
+    }
+
+    return buffer;
 }
 
 module.exports = createBankingRouter;

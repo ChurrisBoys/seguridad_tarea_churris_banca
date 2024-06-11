@@ -21,9 +21,10 @@
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "node-fetch": "^3.3.2",
+    "npm-check-updates": "^16.14.20",
     "winston": "^3.13.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.3"
   }
 }
