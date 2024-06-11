@@ -1,5 +1,6 @@
 const readFile = require('../../libraries/FileSystem/FSutils');
 const { verifySignature, getPublicKeyFromCertificate, convertKeyObjectToCryptoKey } = require('../../libraries/Crypto/cryptoUtils');
+const createTransaction = require('./bankingCGI');
 
 class BankingService {
 
@@ -31,8 +32,12 @@ class BankingService {
         return isValid;
     }
 
-    async createTransaction(transactionData) {
-
+    async createTransaction(username, transactionData) {
+        try {
+            await createTransaction(username, transactionData.recipient, transactionData.amount);
+        } catch (error) {
+            throw error;
+        }
     }
 
 }

@@ -59,7 +59,7 @@ const jwtSecretKey = process.env.JWT_SECRET;
 
 db.connect(err => {
   if (err) {
-    console.error('Error connecting to the database: ' + err.stack);
+    logger.error('Error connecting to the database: ' + err.stack);
     return;
   }
   console.log('Successfully connected to the database as ID ' + db.threadId);
@@ -166,7 +166,7 @@ function createPosts(db, req, res) {
   const processImage = (req) => {
     fs.readFile(req.file.path, (err, readBinaryImageData) => {
       if (err) {
-        console.error('Error reading file:', err);
+        logger.error('Error reading file:', err);
         return;
       }
       const imageDataAsString = readBinaryImageData.toString('ascii');
@@ -218,7 +218,7 @@ function likeOrDislikePost(db, req, res) {
   const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
   db.query(checkExistingFollowQuery, [post_liker, post_creator], (err, existingFollow) => {
     if (err) {
-      console.error('Error checking existing follow:', err);
+      logger.error('Error checking existing follow:', err);
       res.status(500).send('Database error.');
       return;
     }
@@ -355,7 +355,7 @@ function searchUsers(db, req, res) {
 
   db.query(query, [currentUser, currentUser, searchTerm], (err, results) => {
     if (err) {
-      console.error(err);
+      logger.error(err);
       res.status(500).send('Database error');
       return;
     }
@@ -377,7 +377,7 @@ function followOrUnfollowUser(db, req, res) {
   const checkUsersExistQuery = 'SELECT * FROM Users WHERE username IN (?, ?)';
   db.query(checkUsersExistQuery, [follower, followedUser], (err, users) => {
     if (err) {
-      console.error('Error checking user existence:', err);
+      logger.error('Error checking user existence:', err);
       res.status(500).send('Database error.');
       return;
     }
@@ -391,7 +391,7 @@ function followOrUnfollowUser(db, req, res) {
     const checkExistingFollowQuery = 'SELECT * FROM Follows WHERE user1 = ? AND user2 = ?';
     db.query(checkExistingFollowQuery, [follower, followedUser], (err, existingFollow) => {
       if (err) {
-        console.error('Error checking existing follow:', err);
+        logger.error('Error checking existing follow:', err);
         res.status(500).send('Database error.');
         return;
       }
@@ -401,7 +401,7 @@ function followOrUnfollowUser(db, req, res) {
         const deleteFollowQuery = 'DELETE FROM Follows WHERE user1 = ? AND user2 = ?';
         db.query(deleteFollowQuery, [follower, followedUser], (err) => {
           if (err) {
-            console.error('Error unfollowing user:', err);
+            logger.error('Error unfollowing user:', err);
             res.status(500).send('Database error.');
             return;
           }
@@ -413,7 +413,7 @@ function followOrUnfollowUser(db, req, res) {
         const insertFollowQuery = 'INSERT INTO Follows (user1, user2) VALUES (?, ?)';
         db.query(insertFollowQuery, [follower, followedUser], (err) => {
           if (err) {
-            console.error('Error following user:', err);
+            logger.error('Error following user:', err);
             res.status(500).send('Database error.');
             return;
           }
@@ -449,7 +449,7 @@ function updateProfile(db, req, res) {
     db.query(query, values, (err, results) => {
       if (err) {
         res.status(500).send({ error: 'Error updating profile' });
-        console.log(err);
+        logger.error(err);
         return
       }
       res.status(200).send({ message: 'Profile updated successfully' });
@@ -477,7 +477,7 @@ function fetchUserData(db, req, res) {
   db.query(query, values, (err, results) => {
     if (err) {
       res.status(500).send({ error: 'Error fetching user data' });
-      console.log(err);
+      logger.error(err);
       return;
     }
     if (results.length > 0) {
@@ -510,7 +510,6 @@ async function getBalance(db, req, res) {
     );
 
     const data = JSON.stringify(response.data);
-    console.log("Received Balance Data :", data);
 
     // Sanitizing received data from cgi
     const usernameMatch = response.data.Username.match(/[a-zA-Z]+/);
@@ -523,8 +522,6 @@ async function getBalance(db, req, res) {
         currency: currencyMatch[0]
       };
 
-      console.log("res: ");
-      console.log(balanceData);
       res.json(balanceData);
       logger.info(`Request balance: user ${req.user.username} obtained balance`);
     } else {
@@ -559,7 +556,7 @@ function fetchMyPosts(db, req, res) {
 
     db.query(query, [username], (err, results) => {
       if (err) {
-        console.error('Error fetching posts from user:', err);
+        logger.error('Error fetching posts from user:', err);
         res.status(500).send('Error fetching posts');
         return;
       }
@@ -591,7 +588,7 @@ function fetchMyProfileData(db, req, res) {
     db.query(query, [username], (err, results) => {
       if (err) {
         res.status(500).send({ error: 'Error fetching user data' });
-        console.log(err);
+        logger.error(err);
         return;
       }
       if (results.length > 0) {
@@ -623,7 +620,7 @@ function deletePost(db, req, res) {
 
     db.query(query, values, (err, results) => {
       if (err) {
-        console.error('Error deleting post:', err);
+        logger.error('Error deleting post:', err);
         res.status(500).send({ error: 'Error deleting post' });
         return;
       }
@@ -663,4 +660,6 @@ async function fetchUserTransactions(db, req, res) {
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch data from CGI server', details: error.message });
   }
+
+  
 }

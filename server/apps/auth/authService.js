@@ -1,4 +1,5 @@
 const { compare } = require('bcrypt');
+const logger = require('../../libraries/Log/logger');
 class AuthService {
     constructor(userService, JWTSigningStrategy) {
         this.userService = userService;
@@ -26,13 +27,15 @@ class AuthService {
 
     async LogIn(username, inputedPassword) {
         var user = await this.GetUser(username);
-        console.log(user);
         if (!user) {
+            logger.error('User not found');
             throw new Error('User not found');
         }
         if (await this.ComparePassword(user, inputedPassword)) {
+            logger.info('User logged in');
             return this.sign(user);
         } else {
+            logger.error('Invalid username or password');
             throw new Error('Invalid username or password');
         }
     }
