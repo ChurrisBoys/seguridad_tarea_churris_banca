@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Layout from "../Common/Layout";
 import config from '../../config'; // Make sure you have a config file for your BASE_URL
+import { redirect, useNavigate } from 'react-router-dom';
 
 // Input Components (with validation)
 const AmountInput = () => {
@@ -198,6 +199,8 @@ async function signData(importedKey, dataToSend) {
 
 // Main CreateTransaction Component
 const CreateTransaction = () => {
+    const navigate = useNavigate();
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -241,7 +244,7 @@ const CreateTransaction = () => {
         if (response.status === 400) {
             alert('Invalid signature');
         } else if (response.status === 200) {
-            alert('Transaction created successfully');
+            navigate('/banking');
         } else {
             alert('Error creating transaction. Please try again later.');
         }
